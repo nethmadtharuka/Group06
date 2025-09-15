@@ -11,4 +11,5 @@ public interface VendorRepository extends JpaRepository<Vendor, Integer> {
 
     Optional<Vendor> findByUserId(Integer userId);
 
+    boolean existsByUserId(Long userId);
 }

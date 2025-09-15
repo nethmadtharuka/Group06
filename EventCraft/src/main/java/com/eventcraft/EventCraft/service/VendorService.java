@@ -1,32 +1,49 @@
 package com.eventcraft.EventCraft.service;
 
+import com.eventcraft.EventCraft.dto.VendorRegDTO;
+import com.eventcraft.EventCraft.entity.User;
 import com.eventcraft.EventCraft.entity.Vendor;
+import com.eventcraft.EventCraft.repository.UserRepository;
 import com.eventcraft.EventCraft.repository.VendorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class VendorService {
 
     private final VendorRepository vendorRepository;
+    private final UserRepository userRepository;
 
-    public List<Vendor> getAllVendors() {
-        return vendorRepository.findAll();
-    }
+    // Register a vendor for an existing user
+    public Vendor registerVendor(Integer userId, VendorRegDTO request) {
+        // Find user
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
-    public Optional<Vendor> getVendorById(Integer id) {
-        return vendorRepository.findById(id);
-    }
+        // Check if already a vendor
+        if (user.getVendor() != null) {
+            throw new RuntimeException("User is already registered as a Vendor");
+        }
 
-    public Vendor createVendor(Vendor vendor) {
+        // Create Vendor entity
+        Vendor vendor = Vendor.builder()
+                .user(user)
+                .companyName(request.getCompanyName())
+                .serviceType(request.getServiceType())
+                .address(request.getAddress())
+                .rating(0.0)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        // Update user role to VENDOR
+        user.setRole(User.Role.VENDOR);
+        userRepository.save(user);
+
+        // Save vendor
         return vendorRepository.save(vendor);
-    }
-
-    public void deleteVendor(Integer id) {
-        vendorRepository.deleteById(id);
     }
 }
