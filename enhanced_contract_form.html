@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Vendor Contract — Red & White Theme</title>
+  <style>
+    :root{
+      --brand-red:#c8102e; /* primary red */
+      --brand-red-dark:#9b0b21;
+      --white:#ffffff;
+      --muted:#6b6b6b;
+      --radius:10px;
+      --max-width:900px;
+      --gap:16px;
+      font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+
+    *{box-sizing:border-box}
+    body{background:linear-gradient(180deg,var(--white),#fff);color:#111;margin:0;padding:32px;display:flex;align-items:flex-start;justify-content:center;min-height:100vh}
+
+    .card{
+      width:100%;max-width:var(--max-width);background:var(--white);border-radius:var(--radius);box-shadow:0 8px 30px rgba(0,0,0,0.08);padding:28px;border:4px solid var(--brand-red);
+    }
+
+    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+    .logo{width:56px;height:56px;border-radius:8px;background:var(--brand-red);display:flex;align-items:center;justify-content:center;color:var(--white);font-weight:700;font-size:20px}
+    h1{margin:0;font-size:20px}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+
+    form{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--gap)}
+    .full{grid-column:1/-1}
+
+    label{display:block;font-size:13px;margin-bottom:6px;color:#222;font-weight:600}
+    input[type='text'],input[type='email'],input[type='tel'],input[type='date'],textarea,select{
+      width:100%;padding:10px 12px;border:1px solid #eee;border-radius:8px;font-size:14px;outline:none;transition:box-shadow .15s ease,border-color .15s ease
+    }
+    input:focus,textarea:focus{box-shadow:0 0 0 3px rgba(200,16,46,0.10);border-color:var(--brand-red-dark)}
+    textarea{min-height:120px;resize:vertical}
+
+    .hint{font-size:12px;color:var(--muted);margin-top:6px}
+    .error{color:#9b0b21;font-size:13px;margin-top:6px}
+
+    .actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    button{background:var(--brand-red);color:var(--white);padding:10px 16px;border-radius:10px;border:0;font-weight:600;cursor:pointer;font-size:14px}
+    button.secondary{background:transparent;color:var(--brand-red);border:2px solid var(--brand-red)}
+    button.text-export{background:#2563eb;color:white}
+    button[disabled]{opacity:.6;cursor:not-allowed}
+
+    .status{grid-column:1/-1;margin-top:10px}
+    .success{background:#eef7f0;border:1px solid #cfe9d4;padding:10px;border-radius:8px;color:#1f6b2f}
+    .fail{background:#fff2f2;border:1px solid #f1c2c2;padding:10px;border-radius:8px;color:#9b0b21}
+
+    @media (max-width:720px){
+      form{grid-template-columns:1fr}
+      header{gap:10px}
+      .logo{width:48px;height:48px}
+      .actions{justify-content:flex-start}
+    }
+
+    /* subtle table-like preview area */
+    .preview{border-top:1px dashed #eee;padding-top:14px;margin-top:10px}
+    .kv{display:flex;gap:12px;align-items:flex-start;margin-bottom:8px}
+    .kv b{width:160px;display:inline-block;color:#222}
+
+    /* Output format selector */
+    .output-format{display:flex;gap:8px;align-items:center;margin-left:auto}
+    .format-label{font-size:13px;color:var(--muted);font-weight:600}
+    
+    /* Export buttons group */
+    .export-group{display:flex;gap:8px}
+  </style>
+</head>
+<body>
+  <div class="card" role="main">
+    <header>
+      <div class="logo">VC</div>
+      <div>
+        <h1>Generate Vendor Contract</h1>
+        <p class="lead">Fill the form below to generate a contract. Available in PDF and text formats.</p>
+      </div>
+    </header>
+
+    <form id="contractForm" novalidate>
+      <div>
+        <label for="vendorName">Vendor name *</label>
+        <input id="vendorName" name="vendorName" type="text" autocomplete="organization" required />
+        <div class="hint">Company or individual name.</div>
+        <div class="error" data-for="vendorName"></div>
+      </div>
+
+      <div>
+        <label for="vendorEmail">Vendor email</label>
+        <input id="vendorEmail" name="vendorEmail" type="email" autocomplete="email" />
+        <div class="error" data-for="vendorEmail"></div>
+      </div>
+
+      <div>
+        <label for="vendorPhone">Vendor phone</label>
+        <input id="vendorPhone" name="vendorPhone" type="tel" autocomplete="tel" />
+        <div class="error" data-for="vendorPhone"></div>
+      </div>
+
+      <div>
+        <label for="vendorAddress">Vendor address</label>
+        <input id="vendorAddress" name="vendorAddress" type="text" />
+      </div>
+
+      <div class="full">
+        <label for="contractTitle">Contract title *</label>
+        <input id="contractTitle" name="contractTitle" type="text" required />
+        <div class="error" data-for="contractTitle"></div>
+      </div>
+
+      <div>
+        <label for="startDate">Start date *</label>
+        <input id="startDate" name="startDate" type="date" required />
+        <div class="error" data-for="startDate"></div>
+      </div>
+
+      <div>
+        <label for="endDate">End date *</label>
+        <input id="endDate" name="endDate" type="date" required />
+        <div class="error" data-for="endDate"></div>
+      </div>
+
+      <div class="full">
+        <label for="paymentTerms">Payment terms *</label>
+        <textarea id="paymentTerms" name="paymentTerms" required placeholder="e.g., 50% on start, 50% on completion"></textarea>
+        <div class="error" data-for="paymentTerms"></div>
+      </div>
+
+      <div class="full">
+        <label for="deliverables">Deliverables *</label>
+        <textarea id="deliverables" name="deliverables" required placeholder="List of deliverables"></textarea>
+        <div class="error" data-for="deliverables"></div>
+      </div>
+
+      <div class="full">
+        <label for="additionalClauses">Additional clauses</label>
+        <textarea id="additionalClauses" name="additionalClauses" placeholder="Optional clauses, termination, confidentiality"></textarea>
+      </div>
+
+      <div class="full actions">
+        <div class="export-group">
+          <button id="submitBtn" type="submit">Generate PDF</button>
+          <button id="exportTextBtn" type="button" class="text-export">Export as Text</button>
+        </div>
+        <button id="resetBtn" type="button" class="secondary">Reset</button>
+        
+        <div class="output-format">
+          <span class="format-label">API endpoint:</span>
+          <code id="endpoint" style="font-size:13px;color:var(--brand-red)">/contracts</code>
+        </div>
+      </div>
+
+      <div class="status full">
+        <div id="statusArea"></div>
+      </div>
+
+      <div class="full preview" aria-hidden="true">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <strong>Preview (summary)</strong>
+        </div>
+        <div id="previewList"></div>
+      </div>
+    </form>
+
+    <script>
+      (function(){
+        const endpoint = '/contracts';
+        const form = document.getElementById('contractForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const exportTextBtn = document.getElementById('exportTextBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const statusArea = document.getElementById('statusArea');
+        const previewList = document.getElementById('previewList');
+        document.getElementById('endpoint').textContent = endpoint;
+
+        const phoneRe = /^\+?[0-9 \-()]{7,20}$/;
+        const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        function setError(field, msg){
+          const el = document.querySelector(`.error[data-for=\"${field}\"]`);
+          if(el) el.textContent = msg || '';
+        }
+        
+        function clearErrors(){
+          document.querySelectorAll('.error').forEach(el=>el.textContent = '');
+          statusArea.innerHTML = '';
+        }
+
+        function collect(){
+          const fd = new FormData(form);
+          const obj = Object.fromEntries(fd.entries());
+          return obj;
+        }
+
+        function validateForm(data){
+          let valid = true;
+          if(!data.vendorName || !data.vendorName.trim()){ setError('vendorName','Vendor name is required'); valid=false; }
+          if(!data.contractTitle || !data.contractTitle.trim()){ setError('contractTitle','Contract title is required'); valid=false; }
+          if(!data.startDate){ setError('startDate','Start date is required'); valid=false; }
+          if(!data.endDate){ setError('endDate','End date is required'); valid=false; }
+          if(data.startDate && data.endDate){
+            const s = new Date(data.startDate); const e = new Date(data.endDate);
+            if(e < s){ setError('endDate','End date must be after start date'); valid=false; }
+          }
+          if(data.vendorEmail && !emailRe.test(data.vendorEmail)){ setError('vendorEmail','Invalid email address'); valid=false; }
+          if(data.vendorPhone && !phoneRe.test(data.vendorPhone)){ setError('vendorPhone','Invalid phone number'); valid=false; }
+          if(!data.paymentTerms || !data.paymentTerms.trim()){ setError('paymentTerms','Payment terms required'); valid=false; }
+          if(!data.deliverables || !data.deliverables.trim()){ setError('deliverables','Deliverables required'); valid=false; }
+          return valid;
+        }
+
+        function formatDateForDisplay(dateStr){
+          if(!dateStr) return '—';
+          const date = new Date(dateStr);
+          return date.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          });
+        }
+
+        function generateTextContract(data){
+          const currentDate = new Date().toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          });
+          
+          return `VENDOR CONTRACT
+
+Generated on: ${currentDate}
+
+====================================
+CONTRACT DETAILS
+====================================
+
+Contract Title: ${data.contractTitle || 'N/A'}
+Contract Period: ${formatDateForDisplay(data.startDate)} to ${formatDateForDisplay(data.endDate)}
+
+====================================
+VENDOR INFORMATION
+====================================
+
+Vendor Name: ${data.vendorName || 'N/A'}
+Email Address: ${data.vendorEmail || 'N/A'}
+Phone Number: ${data.vendorPhone || 'N/A'}
+Address: ${data.vendorAddress || 'N/A'}
+
+====================================
+PAYMENT TERMS
+====================================
+
+${data.paymentTerms || 'N/A'}
+
+====================================
+DELIVERABLES
+====================================
+
+${data.deliverables || 'N/A'}
+
+${data.additionalClauses ? `====================================
+ADDITIONAL CLAUSES
+====================================
+
+${data.additionalClauses}
+
+` : ''}====================================
+CONTRACT SUMMARY
+====================================
+
+This contract establishes the terms and conditions for services to be provided by ${data.vendorName || '[Vendor Name]'} from ${formatDateForDisplay(data.startDate)} through ${formatDateForDisplay(data.endDate)}.
+
+Both parties agree to the terms outlined above including payment terms, deliverables, and any additional clauses specified.
+
+Contract generated electronically on ${currentDate}.
+
+====================================
+END OF CONTRACT
+====================================`;
+        }
+
+        function downloadTextFile(content, filename){
+          const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }
+
+        function renderPreview(data){
+          previewList.innerHTML = '';
+          const entries = [
+            ['Vendor', data.vendorName || '—'],
+            ['Email', data.vendorEmail || '—'],
+            ['Phone', data.vendorPhone || '—'],
+            ['Contract title', data.contractTitle || '—'],
+            ['Start', data.startDate || '—'],
+            ['End', data.endDate || '—'],
+            ['Payment terms', data.paymentTerms || '—'],
+          ];
+          entries.forEach(([k,v])=>{
+            const row = document.createElement('div'); row.className='kv';
+            row.innerHTML = `<b>${k}</b><div>${escapeHtml(v)}</div>`;
+            previewList.appendChild(row);
+          });
+        }
+
+        function escapeHtml(s){
+          return String(s||'').replace(/[&<>"']/g, function(c){
+            return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+          });
+        }
+
+        // Export as text file functionality
+        exportTextBtn.addEventListener('click', ()=>{
+          clearErrors();
+          const data = collect();
+          
+          if(!validateForm(data)){
+            statusArea.innerHTML = '<div class="fail">Please fix the highlighted fields before exporting.</div>';
+            return;
+          }
+
+          try{
+            const textContent = generateTextContract(data);
+            const filename = `${(data.contractTitle || 'vendor_contract').replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.txt`;
+            
+            downloadTextFile(textContent, filename);
+            statusArea.innerHTML = '<div class="success">Contract exported as text file successfully!</div>';
+            
+            // Optional: Clear form after successful export
+            setTimeout(()=>{
+              form.reset(); 
+              previewList.innerHTML='';
+            }, 2000);
+            
+          }catch(err){
+            statusArea.innerHTML = `<div class="fail">Export failed: ${escapeHtml(err.message)}</div>`;
+          }
+        });
+
+        form.addEventListener('input', ()=>{
+          clearErrors();
+          renderPreview(collect());
+        });
+
+        resetBtn.addEventListener('click', ()=>{
+          form.reset(); clearErrors(); previewList.innerHTML='';
+        });
+
+        // Original PDF generation functionality
+        form.addEventListener('submit', async (ev)=>{
+          ev.preventDefault(); clearErrors();
+          const data = collect();
+          
+          if(!validateForm(data)){
+            statusArea.innerHTML = '<div class="fail">Please fix the highlighted fields and try again.</div>';
+            return;
+          }
+
+          // submit to backend for PDF generation
+          submitBtn.disabled = true; submitBtn.textContent = 'Generating PDF...';
+          try{
+            const resp = await fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data)
+            });
+            if(!resp.ok){
+              const body = await resp.json().catch(()=>({}));
+              throw new Error(body.message || `Server returned ${resp.status}`);
+            }
+            const body = await resp.json().catch(()=>({}));
+            const msg = body.message || 'Contract generated successfully.';
+            const pdfUrl = body.pdfUrl || null;
+            let html = `<div class="success">${escapeHtml(msg)}`;
+            if(pdfUrl){ html += `<div style="margin-top:8px"><a href="${escapeHtml(pdfUrl)}" target="_blank" rel="noopener">Download PDF</a></div>`; }
+            html += `</div>`;
+            statusArea.innerHTML = html;
+            form.reset(); previewList.innerHTML='';
+          }catch(err){
+            statusArea.innerHTML = `<div class="fail">${escapeHtml(err.message || 'PDF generation failed')}</div>`;
+          }finally{
+            submitBtn.disabled = false; submitBtn.textContent = 'Generate PDF';
+          }
+        });
+
+        // initial preview
+        renderPreview(collect());
+      })();
+    </script>
+  </div>
+</body>
+</html>
