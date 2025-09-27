@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/vendors")
 @RequiredArgsConstructor
 public class VendorController {
@@ -16,7 +17,7 @@ public class VendorController {
 
     @PostMapping("/register/{userId}")
     public ResponseEntity<Vendor> registerVendor(
-            @PathVariable Integer userId,
+            @PathVariable String userId,
             @RequestBody VendorRegDTO request) {
         Vendor vendor = vendorService.registerVendor(userId, request);
         return ResponseEntity.ok(vendor);

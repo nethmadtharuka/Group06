@@ -18,7 +18,7 @@ public class VendorService {
     private final UserRepository userRepository;
 
     // Register a vendor for an existing user
-    public Vendor registerVendor(Integer userId, VendorRegDTO request) {
+    public Vendor registerVendor(String userId, VendorRegDTO request) {
         // Find user
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));

@@ -21,7 +21,7 @@ public class ChatbotController {
     }
 
     @GetMapping("/{id}")
-    public Optional<ChatbotConversation> getConversationById(@PathVariable Integer id) {
+    public Optional<ChatbotConversation> getConversationById(@PathVariable String id) {
         return chatbotService.getConversationById(id);
     }
 
@@ -31,7 +31,7 @@ public class ChatbotController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteConversation(@PathVariable Integer id) {
+    public void deleteConversation(@PathVariable String id) {
         chatbotService.deleteConversation(id);
     }
 }

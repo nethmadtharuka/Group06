@@ -1,48 +1,42 @@
 package com.eventcraft.EventCraft.entity;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Entity
-@Table(name = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Document(collection = "users")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String id; // MongoDB ObjectId as String
 
-    @Column(nullable = false, unique = true)
     private String username;
-
-    @Column(nullable = false, unique = true)
     private String email;
-
-    @Column(nullable = false)
     private String password;
 
     private String fullName;
     private String phone;
 
-    @Enumerated(EnumType.STRING)
     private Role role = Role.CUSTOMER;
 
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "user")
+    @DBRef
     private List<Event> events;
 
-    @OneToMany(mappedBy = "user")
+    @DBRef
     private List<ChatbotConversation> conversations;
 
-    @OneToOne(mappedBy = "user")
+    @DBRef
     private Vendor vendor;
 
     public enum Role {

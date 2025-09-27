@@ -18,7 +18,7 @@ public class ContractService {
         return contractRepository.findAll();
     }
 
-    public Optional<Contract> getContractById(Integer id) {
+    public Optional<Contract> getContractById(String id) {
         return contractRepository.findById(id);
     }
 
@@ -26,7 +26,7 @@ public class ContractService {
         return contractRepository.save(contract);
     }
 
-    public void deleteContract(Integer id) {
+    public void deleteContract(String id) {
         contractRepository.deleteById(id);
     }
 }

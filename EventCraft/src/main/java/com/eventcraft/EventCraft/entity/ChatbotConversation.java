@@ -1,35 +1,32 @@
 package com.eventcraft.EventCraft.entity;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "chatbot_conversations")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Document(collection = "chatbot_conversations")
 public class ChatbotConversation {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String id;  // MongoDB uses String ObjectId
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    // References to other documents
+    @DBRef
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id")
+    @DBRef
     private Event event;
 
-    @Column(columnDefinition = "TEXT")
     private String message;
-
-    @Column(columnDefinition = "TEXT")
     private String response;
 
+    @Builder.Default
     private LocalDateTime timestamp = LocalDateTime.now();
 }

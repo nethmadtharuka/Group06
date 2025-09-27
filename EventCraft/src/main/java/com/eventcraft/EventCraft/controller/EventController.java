@@ -21,7 +21,7 @@ public class EventController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Event> getEventById(@PathVariable Integer id) {
+    public Optional<Event> getEventById(@PathVariable String id) {
         return eventService.getEventById(id);
     }
 
@@ -31,7 +31,7 @@ public class EventController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteEvent(@PathVariable Integer id) {
+    public void deleteEvent(@PathVariable String id) {
         eventService.deleteEvent(id);
     }
 }

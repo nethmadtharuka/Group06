@@ -1,31 +1,34 @@
 package com.eventcraft.EventCraft.entity;
 
-import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "payments")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Document(collection = "payments")
 public class Payment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "contract_id", nullable = false)
-    private Contract contract;
+    @Id
+    private String id; // MongoDB ObjectId as String
+
+    @DBRef
+    private Contract contract; // reference to Contract document
 
     private Double amount;
 
-    @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
-    @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus = PaymentStatus.PENDING;
 
     private LocalDateTime paymentDate = LocalDateTime.now();
 
     public enum PaymentMethod { CARD, BANK_TRANSFER, PAYPAL }
-    public enum PaymentStatus { PENDING, COMPLETED, FAILED }
 
-    // getters and setters
+    public enum PaymentStatus { PENDING, COMPLETED, FAILED }
 }

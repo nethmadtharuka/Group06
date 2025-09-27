@@ -1,30 +1,31 @@
 package com.eventcraft.EventCraft.entity;
 
-import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
-@Entity
-@Table(name = "event_vendors", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"event_id", "vendor_id"})
-})
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Document(collection = "event_vendors")
 public class EventVendor {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id", nullable = false)
+    @Id
+    private String id; // MongoDB ObjectId as String
+
+    @DBRef
     private Event event;
 
-    @ManyToOne
-    @JoinColumn(name = "vendor_id", nullable = false)
+    @DBRef
     private Vendor vendor;
 
     private String assignedService;
 
-    @Enumerated(EnumType.STRING)
     private Status status = Status.PENDING;
 
-    public enum Status { PENDING, CONFIRMED, CANCELLED }
-
-    // getters and setters
+    public enum Status {
+        PENDING, CONFIRMED, CANCELLED
+    }
 }

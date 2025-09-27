@@ -1,15 +1,15 @@
 package com.eventcraft.EventCraft.repository;
 
 import com.eventcraft.EventCraft.entity.Vendor;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface VendorRepository extends JpaRepository<Vendor, Integer> {
+public interface VendorRepository extends MongoRepository<Vendor, String> {
 
-    Optional<Vendor> findByUserId(Integer userId);
+    Optional<Vendor> findByUser_Id(String userId);
 
-    boolean existsByUserId(Long userId);
+    boolean existsByUser_Id(String userId);
 }

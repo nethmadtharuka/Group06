@@ -21,7 +21,7 @@ public class ContractController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Contract> getContractById(@PathVariable Integer id) {
+    public Optional<Contract> getContractById(@PathVariable String id) {
         return contractService.getContractById(id);
     }
 
@@ -31,7 +31,7 @@ public class ContractController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteContract(@PathVariable Integer id) {
+    public void deleteContract(@PathVariable String id) {
         contractService.deleteContract(id);
     }
 }

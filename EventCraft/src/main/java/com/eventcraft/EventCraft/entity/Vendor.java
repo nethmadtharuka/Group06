@@ -1,25 +1,24 @@
 package com.eventcraft.EventCraft.entity;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Entity
-@Table(name = "vendors")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Document(collection = "vendors")
 public class Vendor {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String id; // MongoDB ObjectId as String
 
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @DBRef
     private User user;
 
     private String companyName;
@@ -30,9 +29,9 @@ public class Vendor {
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "vendor")
+    @DBRef
     private List<Contract> contracts;
 
-    @OneToMany(mappedBy = "vendor")
+    @DBRef
     private List<EventVendor> assignedEvents;
 }

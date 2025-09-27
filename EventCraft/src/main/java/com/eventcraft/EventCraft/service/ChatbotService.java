@@ -18,7 +18,7 @@ public class ChatbotService {
         return chatbotRepository.findAll();
     }
 
-    public Optional<ChatbotConversation> getConversationById(Integer id) {
+    public Optional<ChatbotConversation> getConversationById(String id) {
         return chatbotRepository.findById(id);
     }
 
@@ -26,7 +26,7 @@ public class ChatbotService {
         return chatbotRepository.save(conversation);
     }
 
-    public void deleteConversation(Integer id) {
+    public void deleteConversation(String id) {
         chatbotRepository.deleteById(id);
     }
 }
