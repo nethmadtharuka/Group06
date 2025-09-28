@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,18 +18,17 @@ public class VendorService {
     private final VendorRepository vendorRepository;
     private final UserRepository userRepository;
 
-    // Register a vendor for an existing user
     public Vendor registerVendor(String userId, VendorRegDTO request) {
         // Find user
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
-        // Check if already a vendor
-        if (user.getVendor() != null) {
+        // Prevent duplicate vendor registration
+        if (vendorRepository.existsByUser_Id(userId)) {
             throw new RuntimeException("User is already registered as a Vendor");
         }
 
-        // Create Vendor entity
+        // Create Vendor
         Vendor vendor = Vendor.builder()
                 .user(user)
                 .companyName(request.getCompanyName())
@@ -39,11 +39,14 @@ public class VendorService {
                 .updatedAt(LocalDateTime.now())
                 .build();
 
-        // Update user role to VENDOR
+        // Update user role
         user.setRole(User.Role.VENDOR);
         userRepository.save(user);
 
-        // Save vendor
         return vendorRepository.save(vendor);
+    }
+
+    public List<Vendor> getAllVendors() {
+        return vendorRepository.findAll();
     }
 }

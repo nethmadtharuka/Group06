@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/vendors")
@@ -21,5 +23,10 @@ public class VendorController {
             @RequestBody VendorRegDTO request) {
         Vendor vendor = vendorService.registerVendor(userId, request);
         return ResponseEntity.ok(vendor);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Vendor>> getAllVendors() {
+        return ResponseEntity.ok(vendorService.getAllVendors());
     }
 }

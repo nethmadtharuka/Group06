@@ -36,9 +36,6 @@ public class User {
     @DBRef
     private List<ChatbotConversation> conversations;
 
-    @DBRef
-    private Vendor vendor;
-
     public enum Role {
         ADMIN, VENDOR, CUSTOMER
     }
