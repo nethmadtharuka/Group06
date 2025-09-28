@@ -2,36 +2,37 @@ package com.eventcraft.EventCraft.controller;
 
 import com.eventcraft.EventCraft.entity.Contract;
 import com.eventcraft.EventCraft.service.ContractService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/contracts")
-@RequiredArgsConstructor
+@RequestMapping("/contracts")
+@CrossOrigin(origins = "*") // Allow requests from React frontend
 public class ContractController {
 
-    private final ContractService contractService;
-
-    @GetMapping
-    public List<Contract> getAllContracts() {
-        return contractService.getAllContracts();
-    }
-
-    @GetMapping("/{id}")
-    public Optional<Contract> getContractById(@PathVariable String id) {
-        return contractService.getContractById(id);
-    }
+    @Autowired
+    private ContractService contractService;
 
     @PostMapping
-    public Contract createContract(@RequestBody Contract contract) {
-        return contractService.createContract(contract);
-    }
+    public ResponseEntity<?> createContract(@RequestBody Map<String, String> payload) {
+        try {
+            Contract contract = Contract.builder()
+                    .contractText(payload.get("contractText"))
+                    .build();
 
-    @DeleteMapping("/{id}")
-    public void deleteContract(@PathVariable String id) {
-        contractService.deleteContract(id);
+            Contract savedContract = contractService.saveContract(contract);
+
+            return ResponseEntity.ok(Map.of(
+                    "message", "Contract saved successfully",
+                    "contractId", savedContract.getId()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                    "message", "Error saving contract: " + e.getMessage()
+            ));
+        }
     }
 }

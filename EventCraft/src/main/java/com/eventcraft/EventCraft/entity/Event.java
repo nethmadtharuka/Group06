@@ -29,9 +29,12 @@ public class Event {
     private String location;
     private Double budget;
 
+    @Builder.Default
     private Status status = Status.PENDING;
 
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
+    @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @DBRef

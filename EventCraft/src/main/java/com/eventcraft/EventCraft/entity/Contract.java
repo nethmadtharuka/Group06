@@ -26,10 +26,13 @@ public class Contract {
 
     private String contractText;
 
+    @Builder.Default
     private Boolean signed = false;
     private LocalDateTime signedAt;
 
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
+    @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @DBRef

@@ -24,9 +24,12 @@ public class Vendor {
     private String companyName;
     private String serviceType;
     private String address;
+    @Builder.Default
     private Double rating = 0.0;
 
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
+    @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @DBRef

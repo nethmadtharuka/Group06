@@ -24,8 +24,10 @@ public class Payment {
 
     private PaymentMethod paymentMethod;
 
+    @Builder.Default
     private PaymentStatus paymentStatus = PaymentStatus.PENDING;
 
+    @Builder.Default
     private LocalDateTime paymentDate = LocalDateTime.now();
 
     public enum PaymentMethod { CARD, BANK_TRANSFER, PAYPAL }

@@ -1,17 +1,10 @@
 package com.eventcraft.EventCraft.repository;
 
 import com.eventcraft.EventCraft.entity.Contract;
-import com.eventcraft.EventCraft.entity.Event;
-import com.eventcraft.EventCraft.entity.Vendor;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 public interface ContractRepository extends MongoRepository<Contract, String> {
-
-    List<Contract> findByEvent(Event event);
-
-    List<Contract> findByVendor(Vendor vendor);
+    // Custom queries can be added here if needed
 }

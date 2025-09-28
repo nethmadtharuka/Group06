@@ -25,9 +25,12 @@ public class User {
     private String fullName;
     private String phone;
 
+    @Builder.Default
     private Role role = Role.CUSTOMER;
 
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
+    @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @DBRef

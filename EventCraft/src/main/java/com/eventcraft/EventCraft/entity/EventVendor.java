@@ -23,6 +23,7 @@ public class EventVendor {
 
     private String assignedService;
 
+    @Builder.Default
     private Status status = Status.PENDING;
 
     public enum Status {
