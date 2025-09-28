@@ -1,6 +1,5 @@
 package com.eventcraft.EventCraft.controller;
 
-import com.eventcraft.EventCraft.dto.UserRegisterDTO;
 import com.eventcraft.EventCraft.entity.User;
 import com.eventcraft.EventCraft.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -16,26 +15,4 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
-
-    @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
-    }
-
-    @GetMapping("/{id}")
-    public Optional<User> getUserById(@PathVariable String id) {
-        return userService.getUserById(id);
-    }
-
-    @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody UserRegisterDTO request) {
-        User user = userService.registerUser(request);
-        return ResponseEntity.ok(user);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable String id) {
-        userService.deleteUser(id);
-    }
 }
