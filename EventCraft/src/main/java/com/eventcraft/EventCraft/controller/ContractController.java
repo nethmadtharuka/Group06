@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -32,6 +33,18 @@ public class ContractController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of(
                     "message", "Error saving contract: " + e.getMessage()
+            ));
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllContracts() {
+        try {
+            List<Contract> contracts = contractService.getAllContracts();
+            return ResponseEntity.ok(contracts);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                    "message", "Error fetching contracts: " + e.getMessage()
             ));
         }
     }

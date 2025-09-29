@@ -5,6 +5,8 @@ import com.eventcraft.EventCraft.repository.ContractRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ContractService {
 
@@ -13,5 +15,9 @@ public class ContractService {
 
     public Contract saveContract(Contract contract) {
         return contractRepository.save(contract);
+    }
+
+    public List<Contract> getAllContracts() {
+        return contractRepository.findAll();
     }
 }

@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class UserController {
 
