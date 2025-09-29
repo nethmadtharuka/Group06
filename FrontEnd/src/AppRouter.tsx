@@ -1,0 +1,37 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import HeaderBar from "./components/HeaderBar.jsx";
+import LandingPage from "./pages/LandingPage.jsx";
+import UsersPage from "./pages/UsersPage.jsx";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import VendorsPage from "./pages/VendorsPage.jsx";
+import EventsPage from "./pages/EventsPage.jsx";
+import ContractsPage from "./pages/ContractsPage.jsx";
+import ChatbotPage from "./pages/ChatbotPage.jsx";
+import CalendarPage from "./pages/CalendarPage.jsx";
+import AboutPage from "./pages/AboutPage.jsx";
+import ContactPage from "./pages/ContactPage.jsx";
+
+export function AppRouter() {
+  return (
+    <BrowserRouter>
+      <div className="min-h-screen bg-gray-50">
+        <HeaderBar />
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          {/* users route removed from primary nav but kept for direct access if needed */}
+          <Route path="/users" element={<UsersPage />} />
+          <Route path="/vendors" element={<VendorsPage />} />
+          <Route path="/events" element={<EventsPage />} />
+          <Route path="/contracts" element={<ContractsPage />} />
+          <Route path="/chatbot" element={<ChatbotPage />} />
+          <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
+  );
+}
