@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = 'http://localhost:8081/api';
 
 // Generic API call function that attaches Authorization header when available
 const apiCall = async (endpoint, options = {}) => {
@@ -46,6 +46,16 @@ export const userAPI = {
   login: (credentials) => apiCall('/users/login', {
     method: 'POST',
     body: JSON.stringify(credentials),
+  }),
+  // Password reset APIs
+  forgotPassword: (email) => apiCall('/users/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  }),
+  validateResetToken: (token) => apiCall(`/users/validate-reset-token?token=${token}`),
+  resetPassword: (resetData) => apiCall('/users/reset-password', {
+    method: 'POST',
+    body: JSON.stringify(resetData),
   }),
 };
 
