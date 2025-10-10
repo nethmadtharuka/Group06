@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Calendar, Users, Store, FileText, MessageSquare, Clock, Info, Phone, User, Trash2 } from 'lucide-react';
+import { Menu, X, Calendar, Users, Store, FileText, MessageSquare, Clock, Info, Phone, User, Trash2, CreditCard } from 'lucide-react';
 import { auth, userAPI } from '../services/api';
 
 const HeaderBar = () => {
@@ -23,6 +23,7 @@ const HeaderBar = () => {
     { name: 'Calendar', path: '/calendar', icon: Clock },
     { name: 'About', path: '/about', icon: Info },
     { name: 'Contact', path: '/contact', icon: Phone },
+    { name: 'Payment', path: '/payment', icon: CreditCard },
   ];
 
   const isActive = (path) => location.pathname === path;
