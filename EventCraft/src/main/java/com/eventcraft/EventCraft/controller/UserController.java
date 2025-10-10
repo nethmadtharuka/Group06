@@ -1,7 +1,10 @@
 package com.eventcraft.EventCraft.controller;
 
+import com.eventcraft.EventCraft.dto.ForgotPasswordRequest;
 import com.eventcraft.EventCraft.dto.LoginRequest;
+import com.eventcraft.EventCraft.dto.ResetPasswordRequest;
 import com.eventcraft.EventCraft.entity.User;
+import com.eventcraft.EventCraft.service.PasswordResetService;
 import com.eventcraft.EventCraft.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 public class UserController {
 
     private final UserService userService;
+    private final PasswordResetService passwordResetService;
 
     @GetMapping
     public List<User> getAllUsers() {
@@ -97,6 +101,61 @@ public class UserController {
     @PostMapping
     public User createUser(@RequestBody User user) {
         return userService.createUser(user);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        try {
+            // Check if user exists
+            if (!userService.existsByEmail(request.getEmail())) {
+                return ResponseEntity.badRequest().body("Email not found");
+            }
+            
+            // Generate and send reset token
+            passwordResetService.generateResetToken(request.getEmail());
+            
+            return ResponseEntity.ok("Password reset email sent successfully");
+        } catch (Exception e) {
+            System.err.println("Error in forgot password: " + e.getMessage());
+            return ResponseEntity.status(500).body("Failed to process password reset request");
+        }
+    }
+
+    @PostMapping("/validate-reset-token")
+    public ResponseEntity<?> validateResetToken(@RequestParam String token) {
+        boolean isValid = passwordResetService.validateToken(token);
+        if (isValid) {
+            return ResponseEntity.ok("Token is valid");
+        } else {
+            return ResponseEntity.badRequest().body("Invalid or expired token");
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        try {
+            // Validate token
+            Optional<String> emailOpt = passwordResetService.getEmailByToken(request.getToken());
+            if (emailOpt.isEmpty()) {
+                return ResponseEntity.badRequest().body("Invalid or expired token");
+            }
+
+            String email = emailOpt.get();
+            
+            // Reset password
+            boolean success = userService.resetPassword(email, request.getNewPassword());
+            if (!success) {
+                return ResponseEntity.badRequest().body("Failed to reset password");
+            }
+
+            // Mark token as used
+            passwordResetService.markTokenAsUsed(request.getToken());
+
+            return ResponseEntity.ok("Password reset successfully");
+        } catch (Exception e) {
+            System.err.println("Error in reset password: " + e.getMessage());
+            return ResponseEntity.status(500).body("Failed to reset password");
+        }
     }
 
     @DeleteMapping("/{id}")
