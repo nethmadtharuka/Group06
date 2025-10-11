@@ -1,6 +1,7 @@
 package com.eventcraft.EventCraft.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EmailService {
 
     private final JavaMailSender mailSender;
@@ -47,6 +49,8 @@ public class EmailService {
 
     public void sendContactFormNotification(String fullName, String email, String subject, String message) {
         try {
+            log.info("Attempting to send contact form notification email from: {} ({})", fullName, email);
+            
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setFrom(fromEmail);
             mailMessage.setTo("eventcraftglobal@gmail.com");
@@ -62,11 +66,13 @@ public class EmailService {
                     "EventCraft System";
             
             mailMessage.setText(emailBody);
+            
+            log.debug("Sending email with subject: {}", mailMessage.getSubject());
             mailSender.send(mailMessage);
             
-            System.out.println("Contact form notification email sent to eventcraftglobal@gmail.com");
+            log.info("Contact form notification email sent successfully to eventcraftglobal@gmail.com");
         } catch (Exception e) {
-            System.err.println("Failed to send contact form notification email: " + e.getMessage());
+            log.error("Failed to send contact form notification email: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to send contact form notification email", e);
         }
     }

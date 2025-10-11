@@ -93,6 +93,31 @@ public class ContactController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/test-email")
+    public ResponseEntity<?> testEmail() {
+        try {
+            log.info("Testing email service...");
+            
+            emailService.sendContactFormNotification(
+                "Test User",
+                "test@example.com",
+                "Test Email",
+                "This is a test email to verify email functionality."
+            );
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Test email sent successfully");
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Test email failed: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body(createErrorResponse(
+                "Test email failed: " + e.getMessage()
+            ));
+        }
+    }
+
     private Map<String, Object> createErrorResponse(String message) {
         Map<String, Object> response = new HashMap<>();
         response.put("success", false);
