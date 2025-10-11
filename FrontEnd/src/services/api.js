@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8081/api';
+const API_BASE_URL = 'http://localhost:8080/api';
 
 // Generic API call function that attaches Authorization header when available
 const apiCall = async (endpoint, options = {}) => {
