@@ -118,21 +118,7 @@ const PaymentPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="bg-teal-600 rounded-lg p-2">
-                <Calendar className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">EventCraft</h1>
-                <p className="text-sm text-gray-500">Event Management</p>
-              </div>
             </div>
-            <button
-              onClick={handleBack}
-              className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              <ArrowLeft className="h-5 w-5 mr-1" />
-              <span className="text-sm font-medium">Back</span>
-            </button>
           </div>
         </div>
       </div>
