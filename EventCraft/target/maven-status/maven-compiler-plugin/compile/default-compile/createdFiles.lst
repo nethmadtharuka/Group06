@@ -2,11 +2,13 @@ com\eventcraft\EventCraft\repository\UserRepository.class
 com\eventcraft\EventCraft\dto\DateSelectionDTO$DateSelectionDTOBuilder.class
 com\eventcraft\EventCraft\controller\ChatbotController.class
 com\eventcraft\EventCraft\entity\Event$EventBuilder.class
+com\eventcraft\EventCraft\service\SMSService.class
 com\eventcraft\EventCraft\entity\ChatbotConversation$ChatbotConversationBuilder.class
 com\eventcraft\EventCraft\dto\GoogleGeminiRequestDTO.class
 com\eventcraft\EventCraft\entity\EventVendor$EventVendorBuilder.class
 com\eventcraft\EventCraft\entity\Payment$PaymentMethod.class
 com\eventcraft\EventCraft\dto\CalendarAvailabilityDTO$EventDateConflict.class
+com\eventcraft\EventCraft\dto\ContactRequest.class
 com\eventcraft\EventCraft\repository\EventVendorRepository.class
 com\eventcraft\EventCraft\config\AppConfig.class
 com\eventcraft\EventCraft\dto\ForgotPasswordRequest.class
@@ -24,6 +26,7 @@ com\eventcraft\EventCraft\dto\DateSelectionDTO.class
 com\eventcraft\EventCraft\controller\VendorController.class
 com\eventcraft\EventCraft\dto\ResetPasswordRequest.class
 com\eventcraft\EventCraft\entity\Vendor$VendorBuilder.class
+com\eventcraft\EventCraft\dto\ContactFormDTO$ContactFormDTOBuilder.class
 com\eventcraft\EventCraft\entity\Vendor.class
 com\eventcraft\EventCraft\entity\EventVendor$Status.class
 com\eventcraft\EventCraft\service\ChatbotService.class
@@ -35,10 +38,12 @@ com\eventcraft\EventCraft\entity\PasswordResetToken.class
 com\eventcraft\EventCraft\entity\User$Role.class
 com\eventcraft\EventCraft\controller\UserController.class
 com\eventcraft\EventCraft\entity\EventVendor.class
+com\eventcraft\EventCraft\controller\ContactController.class
 com\eventcraft\EventCraft\service\CalendarService.class
 com\eventcraft\EventCraft\entity\Contract.class
 com\eventcraft\EventCraft\service\UserService.class
 com\eventcraft\EventCraft\controller\EventController.class
+com\eventcraft\EventCraft\dto\ContactRequest$ContactRequestBuilder.class
 com\eventcraft\EventCraft\service\EmailService.class
 com\eventcraft\EventCraft\dto\GoogleGeminiResponseDTO.class
 com\eventcraft\EventCraft\entity\Payment$PaymentStatus.class
@@ -54,7 +59,9 @@ com\eventcraft\EventCraft\repository\VendorRepository.class
 com\eventcraft\EventCraft\service\PasswordResetService.class
 com\eventcraft\EventCraft\entity\Payment.class
 com\eventcraft\EventCraft\repository\PasswordResetTokenRepository.class
+com\eventcraft\EventCraft\service\ContactService.class
 com\eventcraft\EventCraft\config\SecurityConfig.class
+com\eventcraft\EventCraft\dto\ContactFormDTO.class
 com\eventcraft\EventCraft\entity\User.class
 com\eventcraft\EventCraft\dto\VendorRegDTO.class
 com\eventcraft\EventCraft\entity\Payment$PaymentBuilder.class

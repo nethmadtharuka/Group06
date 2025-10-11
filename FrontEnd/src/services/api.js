@@ -125,6 +125,16 @@ export const calendarAPI = {
   }),
 };
 
+// Contact APIs
+export const contactAPI = {
+  submitForm: (contactData) => apiCall('/contact/submit', {
+    method: 'POST',
+    body: JSON.stringify(contactData),
+  }),
+  healthCheck: () => apiCall('/contact/health'),
+};
+
+
 // Simple client-side auth helpers for storing user id
 export const auth = {
   storageKey: 'eventcraft_auth', // stores JSON { token, user }

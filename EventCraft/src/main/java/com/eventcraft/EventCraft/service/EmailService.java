@@ -44,4 +44,30 @@ public class EmailService {
             throw new RuntimeException("Failed to send password reset email", e);
         }
     }
+
+    public void sendContactFormNotification(String fullName, String email, String subject, String message) {
+        try {
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setFrom(fromEmail);
+            mailMessage.setTo("eventcraftglobal@gmail.com");
+            mailMessage.setSubject("New Message from " + fullName);
+            
+            String emailBody = "New contact form submission received:\n\n" +
+                    "Full Name: " + fullName + "\n" +
+                    "Email Address: " + email + "\n" +
+                    "Subject: " + subject + "\n" +
+                    "Message:\n" + message + "\n\n" +
+                    "Please respond to the user at: " + email + "\n\n" +
+                    "Best regards,\n" +
+                    "EventCraft System";
+            
+            mailMessage.setText(emailBody);
+            mailSender.send(mailMessage);
+            
+            System.out.println("Contact form notification email sent to eventcraftglobal@gmail.com");
+        } catch (Exception e) {
+            System.err.println("Failed to send contact form notification email: " + e.getMessage());
+            throw new RuntimeException("Failed to send contact form notification email", e);
+        }
+    }
 }

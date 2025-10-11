@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import BackButton from '../components/BackButton';
 import FormInput from '../components/FormInput';
-import { Mail, Phone, MapPin, Send, MessageSquare } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, MessageSquare, AlertCircle, CheckCircle } from 'lucide-react';
+import { contactAPI } from '../services/api';
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +12,9 @@ const ContactPage = () => {
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleInputChange = (e) => {
     setFormData({
@@ -19,12 +23,45 @@ const ContactPage = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In a real app, you would send this to your backend
-    console.log('Contact form submitted:', formData);
-    setSubmitted(true);
-    setFormData({ name: '', email: '', subject: '', message: '' });
+    setIsSubmitting(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      // Validate form data
+      if (!formData.name.trim() || !formData.email.trim() || !formData.subject.trim() || !formData.message.trim()) {
+        throw new Error('All fields are required');
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        throw new Error('Please enter a valid email address');
+      }
+
+      // Submit to backend
+      const response = await contactAPI.submitForm({
+        fullName: formData.name.trim(),
+        email: formData.email.trim(),
+        subject: formData.subject.trim(),
+        message: formData.message.trim()
+      });
+
+      if (response.success) {
+        setSuccess(response.message || 'Thank you for reaching out! We will get back to you soon.');
+        setSubmitted(true);
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      } else {
+        throw new Error(response.message || 'Failed to submit contact form');
+      }
+    } catch (err) {
+      console.error('Contact form submission error:', err);
+      setError(err.message || 'Sorry, there was an error processing your request. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -34,14 +71,18 @@ const ContactPage = () => {
           <BackButton />
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Send className="h-8 w-8 text-green-600" />
+              <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-4">Thank You!</h1>
             <p className="text-lg text-gray-600 mb-8">
-              Your message has been sent successfully. We'll get back to you soon.
+              {success || "Your message has been sent successfully. We'll get back to you soon."}
             </p>
             <button
-              onClick={() => setSubmitted(false)}
+              onClick={() => {
+                setSubmitted(false);
+                setSuccess('');
+                setError('');
+              }}
               className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
             >
               Send Another Message
@@ -76,7 +117,7 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">Email</h3>
-                    <p className="text-gray-600">contact@eventcraft.com</p>
+                    <p className="text-gray-600">eventcraftglobal@gmail.com</p>
                     <p className="text-sm text-gray-500">We'll respond within 24 hours</p>
                   </div>
                 </div>
@@ -87,8 +128,8 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">Phone</h3>
-                    <p className="text-gray-600">+1 (555) 123-4567</p>
-                    <p className="text-sm text-gray-500">Mon-Fri 9AM-6PM EST</p>
+                    <p className="text-gray-600">+94 774842458</p>
+                    <p className="text-sm text-gray-500">Available for urgent inquiries</p>
                   </div>
                 </div>
                 
@@ -129,6 +170,22 @@ const ContactPage = () => {
             </div>
             
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Error Message */}
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start space-x-3">
+                  <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-red-700 text-sm">{error}</p>
+                </div>
+              )}
+
+              {/* Success Message */}
+              {success && !submitted && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start space-x-3">
+                  <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-green-700 text-sm">{success}</p>
+                </div>
+              )}
+
               <FormInput
                 label="Full Name"
                 name="name"
@@ -171,10 +228,20 @@ const ContactPage = () => {
               
               <button
                 type="submit"
-                className="w-full bg-teal-600 hover:bg-teal-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2"
+                disabled={isSubmitting}
+                className="w-full bg-teal-600 hover:bg-teal-700 disabled:bg-teal-400 text-white py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2"
               >
-                <Send className="h-4 w-4" />
-                <span>Send Message</span>
+                {isSubmitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    <span>Sending...</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-4 w-4" />
+                    <span>Send Message</span>
+                  </>
+                )}
               </button>
             </form>
           </div>
