@@ -94,6 +94,12 @@ public class UserService {
         return true;
     }
 
+    public User updateUser(String id, User user) {
+        user.setId(id);
+        user.setUpdatedAt(LocalDateTime.now());
+        return userRepository.save(user);
+    }
+
     public void deleteUser(String id) {
         userRepository.deleteById(id);
     }

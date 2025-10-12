@@ -49,4 +49,34 @@ public class VendorService {
     public List<Vendor> getAllVendors() {
         return vendorRepository.findAll();
     }
+
+    public java.util.Optional<Vendor> getVendorById(String id) {
+        return vendorRepository.findById(id);
+    }
+
+    public Vendor updateVendor(String id, Vendor updatedVendor) {
+        Vendor existingVendor = vendorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Vendor not found with id: " + id));
+        
+        // Update fields
+        if (updatedVendor.getCompanyName() != null) {
+            existingVendor.setCompanyName(updatedVendor.getCompanyName());
+        }
+        if (updatedVendor.getServiceType() != null) {
+            existingVendor.setServiceType(updatedVendor.getServiceType());
+        }
+        if (updatedVendor.getAddress() != null) {
+            existingVendor.setAddress(updatedVendor.getAddress());
+        }
+        if (updatedVendor.getRating() != null) {
+            existingVendor.setRating(updatedVendor.getRating());
+        }
+        
+        existingVendor.setUpdatedAt(LocalDateTime.now());
+        return vendorRepository.save(existingVendor);
+    }
+
+    public void deleteVendor(String id) {
+        vendorRepository.deleteById(id);
+    }
 }

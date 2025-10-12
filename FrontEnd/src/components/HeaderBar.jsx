@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Calendar, Users, Store, FileText, MessageSquare, Clock, Info, Phone } from 'lucide-react';
+import { Menu, X, Calendar, Users, Store, FileText, MessageSquare, Clock, Info, Phone, Shield } from 'lucide-react';
 import { auth } from '../services/api';
 
 const HeaderBar = () => {
@@ -24,6 +24,11 @@ const HeaderBar = () => {
     { name: 'Contact', path: '/contact', icon: Phone },
   ];
 
+  // Add admin link if user is admin
+  const adminNavigation = user && user.role === 'ADMIN' 
+    ? [{ name: 'Admin Panel', path: '/admin', icon: Shield }] 
+    : [];
+
   const isActive = (path) => location.pathname === path;
 
   return (
@@ -43,7 +48,7 @@ const HeaderBar = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex space-x-1 items-center">
-            {navigation.map((item) => {
+            {[...navigation, ...adminNavigation].map((item) => {
               const Icon = item.icon;
               return (
                 <Link
@@ -52,6 +57,8 @@ const HeaderBar = () => {
                   className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     isActive(item.path)
                       ? 'bg-teal-100 text-teal-700'
+                      : item.name === 'Admin Panel'
+                      ? 'text-purple-600 hover:text-purple-700 hover:bg-purple-50 font-semibold'
                       : 'text-gray-600 hover:text-teal-600 hover:bg-teal-50'
                   }`}
                 >
@@ -112,7 +119,7 @@ const HeaderBar = () => {
         {isMenuOpen && (
           <div className="lg:hidden border-t border-gray-200 py-4">
             <nav className="grid grid-cols-1 gap-2">
-              {navigation.map((item) => {
+              {[...navigation, ...adminNavigation].map((item) => {
                 const Icon = item.icon;
                 return (
                   <Link
@@ -122,6 +129,8 @@ const HeaderBar = () => {
                     className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                       isActive(item.path)
                         ? 'bg-teal-100 text-teal-700'
+                        : item.name === 'Admin Panel'
+                        ? 'text-purple-600 hover:text-purple-700 hover:bg-purple-50 font-semibold'
                         : 'text-gray-600 hover:text-teal-600 hover:bg-teal-50'
                     }`}
                   >

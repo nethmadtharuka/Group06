@@ -167,3 +167,71 @@ export const auth = {
     }
   }
 };
+
+// Admin APIs
+export const adminAPI = {
+  getDashboardStats: () => apiCall('/admin/dashboard/stats'),
+  getAllUsers: () => apiCall('/admin/users'),
+  getUserById: (id) => apiCall(`/admin/users/${id}`),
+  updateUser: (id, userData) => apiCall(`/admin/users/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(userData),
+  }),
+  deleteUser: (id) => apiCall(`/admin/users/${id}`, {
+    method: 'DELETE',
+  }),
+  updateUserRole: (id, role) => apiCall(`/admin/users/${id}/role`, {
+    method: 'PUT',
+    body: JSON.stringify({ role }),
+  }),
+  getAllEvents: () => apiCall('/admin/events'),
+  getEventById: (id) => apiCall(`/admin/events/${id}`),
+  updateEvent: (id, eventData) => apiCall(`/admin/events/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(eventData),
+  }),
+  deleteEvent: (id) => apiCall(`/admin/events/${id}`, {
+    method: 'DELETE',
+  }),
+  getAllVendors: () => apiCall('/admin/vendors'),
+  getVendorById: (id) => apiCall(`/admin/vendors/${id}`),
+  updateVendor: (id, vendorData) => apiCall(`/admin/vendors/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(vendorData),
+  }),
+  deleteVendor: (id) => apiCall(`/admin/vendors/${id}`, {
+    method: 'DELETE',
+  }),
+  getSettings: () => apiCall('/admin/settings'),
+  updateSettings: (settings) => apiCall('/admin/settings', {
+    method: 'PUT',
+    body: JSON.stringify(settings),
+  }),
+  getLogs: () => apiCall('/admin/logs'),
+};
+
+// Default export for easier imports
+const api = {
+  get: (endpoint) => apiCall(endpoint),
+  post: (endpoint, data) => apiCall(endpoint, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  put: (endpoint, data) => apiCall(endpoint, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  }),
+  delete: (endpoint) => apiCall(endpoint, {
+    method: 'DELETE',
+  }),
+  user: userAPI,
+  vendor: vendorAPI,
+  event: eventAPI,
+  contract: contractAPI,
+  chatbot: chatbotAPI,
+  calendar: calendarAPI,
+  admin: adminAPI,
+  auth: auth,
+};
+
+export default api;

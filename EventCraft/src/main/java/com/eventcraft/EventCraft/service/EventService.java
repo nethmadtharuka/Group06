@@ -60,4 +60,9 @@ public class EventService {
         }
         throw new RuntimeException("Event not found with id: " + eventId);
     }
+
+    public Event updateEvent(String id, Event event) {
+        event.setId(id);
+        return eventRepository.save(event);
+    }
 }
