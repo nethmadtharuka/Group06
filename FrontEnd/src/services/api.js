@@ -47,6 +47,16 @@ export const userAPI = {
     method: 'POST',
     body: JSON.stringify(credentials),
   }),
+  // Password reset APIs
+  forgotPassword: (email) => apiCall('/users/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  }),
+  validateResetToken: (token) => apiCall(`/users/validate-reset-token?token=${token}`),
+  resetPassword: (resetData) => apiCall('/users/reset-password', {
+    method: 'POST',
+    body: JSON.stringify(resetData),
+  }),
 };
 
 // Vendor APIs
@@ -70,11 +80,32 @@ export const eventAPI = {
 
 // Contract APIs
 export const contractAPI = {
-  getAll: () => apiCall('/contracts'),
-  create: (contractData) => apiCall('/contracts', {
-    method: 'POST',
-    body: JSON.stringify(contractData),
-  }),
+  // Use the root /contracts endpoint (no /api prefix)
+  getAll: async () => {
+    const token = auth.getToken();
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+    const res = await fetch('http://localhost:8080/contracts', { headers });
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    return res.json();
+  },
+  // create needs to post to the root server path (no /api prefix)
+  create: async (contractData) => {
+    const token = auth.getToken();
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+    const res = await fetch('http://localhost:8080/contracts', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(contractData),
+    });
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    return res.json();
+  },
 };
 
 // Chatbot APIs
@@ -93,6 +124,16 @@ export const calendarAPI = {
     body: JSON.stringify(eventData),
   }),
 };
+
+// Contact APIs
+export const contactAPI = {
+  submitForm: (contactData) => apiCall('/contact/submit', {
+    method: 'POST',
+    body: JSON.stringify(contactData),
+  }),
+  healthCheck: () => apiCall('/contact/health'),
+};
+
 
 // Simple client-side auth helpers for storing user id
 export const auth = {

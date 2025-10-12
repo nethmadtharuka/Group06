@@ -48,6 +48,15 @@ const Login = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full px-3 py-2 border rounded-md" required />
           </div>
+          <div className="mb-4 text-right">
+            <button
+              type="button"
+              onClick={() => navigate('/forgot-password')}
+              className="text-sm text-teal-600 hover:text-teal-800 underline"
+            >
+              Forgot Password?
+            </button>
+          </div>
           <button className="w-full bg-teal-600 text-white py-2 rounded-md" disabled={loading}>{loading ? 'Logging in...' : 'Login'}</button>
         </form>
       </div>

@@ -48,9 +48,9 @@ const ContractsPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const user = auth.getUser();
-      const payload = { ...formData, userId: formData.userId || (user && (user.id || user._id)) };
-        await contractAPI.create(payload);
+      // backend expects { contractText }
+      const payload = { contractText: formData.details };
+      await contractAPI.create(payload);
       setFormData({ userId: '', vendorId: '', eventId: '', details: '' });
       setShowForm(false);
       fetchData();
@@ -72,8 +72,8 @@ const ContractsPage = () => {
   };
 
   const getVendorName = (vendorId) => {
-    const vendor = vendors.find(v => (v._id === vendorId) || (v.id === vendorId));
-    return vendor ? `${vendor.companyName}${vendor.serviceType ? ' — ' + vendor.serviceType : ''}` : 'Unknown Vendor';
+    const vendor = vendors.find(v => v._id === vendorId);
+    return vendor ? vendor.companyName : 'Unknown Vendor';
   };
 
   const getEventTitle = (eventId) => {
@@ -125,42 +125,26 @@ const ContractsPage = () => {
                   </div>
                 )}
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Vendor</label>
-                  <select
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Vendor (paste vendor id or name)</label>
+                  <input
+                    type="text"
                     name="vendorId"
                     value={formData.vendorId}
                     onChange={handleInputChange}
+                    placeholder="Enter vendor id or company name"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    required
-                  >
-                    <option value="">Select a vendor</option>
-                    {vendors.map((vendor) => {
-                      const vid = vendor.id || vendor._id;
-                      const label = `${vendor.companyName}${vendor.serviceType ? ' — ' + vendor.serviceType : ''}`;
-                      return (
-                        <option key={vid} value={vid}>
-                          {label}
-                        </option>
-                      );
-                    })}
-                  </select>
+                  />
                 </div>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Event</label>
-                  <select
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Event (paste event id or name)</label>
+                  <input
+                    type="text"
                     name="eventId"
                     value={formData.eventId}
                     onChange={handleInputChange}
+                    placeholder="Enter event id or title"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    required
-                  >
-                    <option value="">Select an event</option>
-                    {events.map((event) => (
-                      <option key={event._id} value={event._id}>
-                        {event.title}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Contract Details</label>
@@ -171,7 +155,6 @@ const ContractsPage = () => {
                     rows={4}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
                     placeholder="Describe the contract terms and conditions..."
-                    required
                   />
                 </div>
                 <div className="flex space-x-3">
@@ -194,36 +177,19 @@ const ContractsPage = () => {
           </div>
         )}
 
-        {/* Contracts Grid */}
+        {/* Contracts Grid (simplified) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {contracts.map((contract) => (
-            <Card key={contract._id} className="hover:shadow-lg transition-shadow">
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <FileText className="h-6 w-6 text-teal-600" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 mb-2">Contract Details</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center text-gray-600">
-                      <User className="h-4 w-4 mr-2" />
-                      <span>{getUserName(contract.userId)}</span>
-                    </div>
-                    <div className="flex items-center text-gray-600">
-                      <Store className="h-4 w-4 mr-2" />
-                      <span>{getVendorName(contract.vendorId)}</span>
-                    </div>
-                    <div className="flex items-center text-gray-600">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      <span>{getEventTitle(contract.eventId)}</span>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-600 mt-3 line-clamp-2">
-                    {contract.details}
-                  </p>
-                  <div className="text-xs text-gray-500 mt-2">
-                    Created: {new Date(contract.createdAt).toLocaleDateString()}
-                  </div>
+            <Card key={contract.id || contract._id} className="hover:shadow-lg transition-shadow">
+              <div className="p-4">
+                <h3 className="font-semibold text-gray-900 mb-2">Contract</h3>
+                <div className="text-sm text-gray-700 space-y-2">
+                  <div><span className="font-medium">Event:</span> {contract.event ? JSON.stringify(contract.event) : 'null'}</div>
+                  <div><span className="font-medium">Vendor:</span> {contract.vendor ? JSON.stringify(contract.vendor) : 'null'}</div>
+                  <div><span className="font-medium">Contract Text:</span> {contract.contractText}</div>
+                  <div><span className="font-medium">Signed:</span> {contract.signed ? 'Yes' : 'No'}</div>
+                  <div><span className="font-medium">Created:</span> {contract.createdAt ? new Date(contract.createdAt).toLocaleString() : '-'}</div>
+                  <div><span className="font-medium">Payments:</span> {contract.payments ? JSON.stringify(contract.payments) : 'null'}</div>
                 </div>
               </div>
             </Card>

@@ -53,31 +53,13 @@ const EventsPage = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return '-';
-    // support dates like '2025-06-15' (no time) and full ISO strings
-    const parseDate = (s) => {
-      if (!s) return null;
-      // YYYY-MM-DD -> append midnight to avoid timezone shift
-      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return new Date(`${s}T00:00:00`);
-      const d = new Date(s);
-      return isNaN(d) ? null : d;
-    };
-
-    const d = parseDate(dateString);
-    if (!d) return '-';
-    return d.toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
-  };
-
-  const formatEventRange = (ev) => {
-    const start = ev.startDate || ev.date || null;
-    const end = ev.endDate || null;
-    if (!start && !end) return '-';
-    if (start && end) return `${formatDate(start)} — ${formatDate(end)}`;
-    return formatDate(start);
   };
 
   if (loading) {
@@ -172,18 +154,21 @@ const EventsPage = () => {
         {/* Events Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {events.map((event) => (
-            <Card key={event.id || event._id} className="hover:shadow-lg transition-shadow">
+            <Card key={event._id} className="hover:shadow-lg transition-shadow">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center space-x-3">
                   <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
                     <Calendar className="h-6 w-6 text-teal-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">{event.name || event.title || 'Untitled Event'}</h3>
+                    <h3 className="font-semibold text-gray-900">{event.title}</h3>
                     <p className="text-sm text-gray-600">{event.description}</p>
                   </div>
                 </div>
-                <Link to={`/events/${event.id || event._id}`} className="text-teal-600 hover:text-teal-700">
+                <Link
+                  to={`/events/${event._id}`}
+                  className="text-teal-600 hover:text-teal-700"
+                >
                   <Eye className="h-4 w-4" />
                 </Link>
               </div>
@@ -194,7 +179,7 @@ const EventsPage = () => {
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
                   <Clock className="h-4 w-4 mr-2" />
-                  <span>{formatEventRange(event)}</span>
+                  <span>{formatDate(event.date)}</span>
                 </div>
               </div>
             </Card>
