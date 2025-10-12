@@ -7,4 +7,5 @@ public class VendorRegDTO {
     private String companyName;
     private String serviceType;
     private String address;
+    private String imageUrl;
 }

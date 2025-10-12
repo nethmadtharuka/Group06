@@ -35,6 +35,7 @@ public class VendorService {
                 .companyName(request.getCompanyName())
                 .serviceType(request.getServiceType())
                 .address(request.getAddress())
+                .imageUrl(request.getImageUrl())
                 .rating(0.0)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -63,6 +64,9 @@ public class VendorService {
         }
         if (request.getAddress() != null && !request.getAddress().isEmpty()) {
             vendor.setAddress(request.getAddress());
+        }
+        if (request.getImageUrl() != null && !request.getImageUrl().isEmpty()) {
+            vendor.setImageUrl(request.getImageUrl());
         }
 
         vendor.setUpdatedAt(LocalDateTime.now());

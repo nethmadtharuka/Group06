@@ -24,6 +24,7 @@ public class Vendor {
     private String companyName;
     private String serviceType;
     private String address;
+    private String imageUrl;
     @Builder.Default
     private Double rating = 0.0;
 
