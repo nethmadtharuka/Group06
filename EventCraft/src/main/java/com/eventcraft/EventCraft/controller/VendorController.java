@@ -1,6 +1,7 @@
 package com.eventcraft.EventCraft.controller;
 
 import com.eventcraft.EventCraft.dto.VendorRegDTO;
+import com.eventcraft.EventCraft.dto.VendorUpdateDTO;
 import com.eventcraft.EventCraft.entity.Vendor;
 import com.eventcraft.EventCraft.service.VendorService;
 import lombok.RequiredArgsConstructor;
@@ -29,4 +30,19 @@ public class VendorController {
     public ResponseEntity<List<Vendor>> getAllVendors() {
         return ResponseEntity.ok(vendorService.getAllVendors());
     }
+
+    @PutMapping("/update/{userId}")
+    public ResponseEntity<Vendor> updateVendor(
+            @PathVariable String userId,
+            @RequestBody VendorUpdateDTO request) {
+        Vendor updatedVendor = vendorService.updateVendor(userId, request);
+        return ResponseEntity.ok(updatedVendor);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<Vendor> getVendorByUserId(@PathVariable String userId) {
+        Vendor vendor = vendorService.getVendorByUserId(userId);
+        return ResponseEntity.ok(vendor);
+    }
+
 }

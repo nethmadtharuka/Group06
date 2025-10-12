@@ -1,6 +1,7 @@
 package com.eventcraft.EventCraft.service;
 
 import com.eventcraft.EventCraft.dto.VendorRegDTO;
+import com.eventcraft.EventCraft.dto.VendorUpdateDTO;
 import com.eventcraft.EventCraft.entity.User;
 import com.eventcraft.EventCraft.entity.Vendor;
 import com.eventcraft.EventCraft.repository.UserRepository;
@@ -49,4 +50,29 @@ public class VendorService {
     public List<Vendor> getAllVendors() {
         return vendorRepository.findAll();
     }
+
+    public Vendor updateVendor(String userId, VendorUpdateDTO request) {
+        Vendor vendor = vendorRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Vendor not found for userId: " + userId));
+
+        if (request.getCompanyName() != null && !request.getCompanyName().isEmpty()) {
+            vendor.setCompanyName(request.getCompanyName());
+        }
+        if (request.getServiceType() != null && !request.getServiceType().isEmpty()) {
+            vendor.setServiceType(request.getServiceType());
+        }
+        if (request.getAddress() != null && !request.getAddress().isEmpty()) {
+            vendor.setAddress(request.getAddress());
+        }
+
+        vendor.setUpdatedAt(LocalDateTime.now());
+
+        return vendorRepository.save(vendor);
+    }
+
+    public Vendor getVendorByUserId(String userId) {
+        return vendorRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Vendor not found for userId: " + userId));
+    }
+
 }

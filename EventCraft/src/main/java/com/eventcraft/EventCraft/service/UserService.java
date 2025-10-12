@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,6 +76,22 @@ public class UserService {
         }
 
         return Optional.empty();
+    }
+
+    public boolean resetPassword(String email, String newPassword) {
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            return false;
+        }
+
+        User user = userOpt.get();
+        String hashedPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(hashedPassword);
+        user.setUpdatedAt(LocalDateTime.now());
+        
+        userRepository.save(user);
+        System.out.println("DEBUG: Password reset successful for user: " + email);
+        return true;
     }
 
     public void deleteUser(String id) {
