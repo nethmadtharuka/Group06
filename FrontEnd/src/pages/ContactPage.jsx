@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import BackButton from '../components/BackButton';
 import FormInput from '../components/FormInput';
 import { Mail, Phone, MapPin, Send, MessageSquare, AlertCircle, CheckCircle } from 'lucide-react';
 import { contactAPI } from '../services/api';
@@ -68,7 +67,6 @@ const ContactPage = () => {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <BackButton />
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="h-8 w-8 text-green-600" />
@@ -96,7 +94,6 @@ const ContactPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <BackButton />
         
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Contact Us</h1>

@@ -113,6 +113,32 @@ public class CalendarController {
     }
 
     /**
+     * Get calendar events for a specific user
+     */
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<Event>> getCalendarEventsByUser(@PathVariable String userId) {
+        try {
+            List<Event> events = calendarService.getCalendarEventsByUser(userId);
+            return ResponseEntity.ok(events);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /**
+     * Add a new calendar event
+     */
+    @PostMapping
+    public ResponseEntity<Event> addCalendarEvent(@RequestBody Event event) {
+        try {
+            Event createdEvent = eventService.createEvent(event);
+            return ResponseEntity.ok(createdEvent);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /**
      * Create event with selected date
      */
     @PostMapping("/create-event")

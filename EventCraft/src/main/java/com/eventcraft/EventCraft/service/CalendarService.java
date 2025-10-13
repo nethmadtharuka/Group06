@@ -196,5 +196,12 @@ public class CalendarService {
                 .limit(limit)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Get calendar events for a specific user
+     */
+    public List<Event> getCalendarEventsByUser(String userId) {
+        return eventRepository.findByUserId(userId);
+    }
 }
 

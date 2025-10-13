@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { eventAPI } from '../services/api';
-import BackButton from '../components/BackButton';
 import Card from '../components/Card';
 import FormInput from '../components/FormInput';
 import { Plus, Calendar, MapPin, Clock, Eye } from 'lucide-react';
@@ -76,7 +75,6 @@ const EventsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <BackButton />
         
         <div className="flex justify-between items-center mb-8">
           <div>

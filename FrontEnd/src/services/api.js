@@ -1,5 +1,48 @@
 const API_BASE_URL = 'http://localhost:8080/api';
 
+// Simple client-side auth helpers for storing user id
+export const auth = {
+  storageKey: 'eventcraft_auth', // stores JSON { token, user }
+  saveAuth: ({ token, user }) => {
+    try {
+      localStorage.setItem(auth.storageKey, JSON.stringify({ token, user }));
+    } catch (e) {
+      console.warn('Failed to save auth', e);
+    }
+  },
+  getAuth: () => {
+    try {
+      const raw = localStorage.getItem(auth.storageKey);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  },
+  getToken: () => {
+    try {
+      const a = auth.getAuth();
+      return a ? a.token : null;
+    } catch (e) {
+      return null;
+    }
+  },
+  getUser: () => {
+    try {
+      const a = auth.getAuth();
+      return a ? a.user : null;
+    } catch (e) {
+      return null;
+    }
+  },
+  clearAuth: () => {
+    try {
+      localStorage.removeItem(auth.storageKey);
+    } catch (e) {
+      // ignore
+    }
+  }
+};
+
 // Generic API call function that attaches Authorization header when available
 const apiCall = async (endpoint, options = {}) => {
   try {
@@ -66,6 +109,11 @@ export const vendorAPI = {
     method: 'POST',
     body: JSON.stringify(vendorData),
   }),
+  getUserVendor: (userId) => apiCall(`/vendors/user/${userId}`),
+  updateVendor: (userId, vendorData) => apiCall(`/vendors/update/${userId}`, {
+    method: 'PUT',
+    body: JSON.stringify(vendorData),
+  }),
 };
 
 // Event APIs
@@ -76,6 +124,7 @@ export const eventAPI = {
     method: 'POST',
     body: JSON.stringify(eventData),
   }),
+  getByUser: (userId) => apiCall(`/events/user/${userId}`),
 };
 
 // Contract APIs
@@ -106,6 +155,32 @@ export const contractAPI = {
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     return res.json();
   },
+  // Additional contract methods
+  getUserContracts: (userId) => apiCall(`/contracts/user/${userId}`),
+  createContract: (contractData) => {
+    const user = auth.getUser();
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(user && user.id ? { 'X-User-ID': user.id } : {})
+    };
+    
+    return fetch(`${API_BASE_URL}/contracts/create`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(contractData),
+    }).then(res => {
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+      return res.json();
+    });
+  },
+  updateContractStatus: (contractId, signed) => apiCall(`/contracts/${contractId}/status`, {
+    method: 'PUT',
+    body: JSON.stringify({ signed }),
+  }),
+  deleteContract: (contractId) => apiCall(`/contracts/${contractId}`, {
+    method: 'DELETE',
+  }),
+  getContractById: (contractId) => apiCall(`/contracts/${contractId}`),
 };
 
 // Chatbot APIs
@@ -123,6 +198,16 @@ export const calendarAPI = {
     method: 'POST',
     body: JSON.stringify(eventData),
   }),
+  // Additional calendar methods
+  getUpcomingEvents: (userId, limit = 10) => apiCall(`/calendar/upcoming-events/${userId}?limit=${limit}`),
+  checkAvailability: (dateSelection) => apiCall('/calendar/check-availability', {
+    method: 'POST',
+    body: JSON.stringify(dateSelection),
+  }),
+  validateDate: (dateSelection) => apiCall('/calendar/validate-date', {
+    method: 'POST',
+    body: JSON.stringify(dateSelection),
+  }),
 };
 
 // Contact APIs
@@ -134,46 +219,71 @@ export const contactAPI = {
   healthCheck: () => apiCall('/contact/health'),
 };
 
-
-// Simple client-side auth helpers for storing user id
-export const auth = {
-  storageKey: 'eventcraft_auth', // stores JSON { token, user }
-  saveAuth: ({ token, user }) => {
-    try {
-      localStorage.setItem(auth.storageKey, JSON.stringify({ token, user }));
-    } catch (e) {
-      console.warn('Failed to save auth', e);
-    }
-  },
-  getAuth: () => {
-    try {
-      const raw = localStorage.getItem(auth.storageKey);
-      return raw ? JSON.parse(raw) : null;
-    } catch (e) {
-      return null;
-    }
-  },
-  getToken: () => {
-    try {
-      const a = auth.getAuth();
-      return a ? a.token : null;
-    } catch (e) {
-      return null;
-    }
-  },
-  getUser: () => {
-    try {
-      const a = auth.getAuth();
-      return a ? a.user : null;
-    } catch (e) {
-      return null;
-    }
-  },
-  clearAuth: () => {
-    try {
-      localStorage.removeItem(auth.storageKey);
-    } catch (e) {
-      // ignore
-    }
-  }
+// Admin APIs
+export const adminAPI = {
+  getDashboardStats: () => apiCall('/admin/dashboard/stats'),
+  getAllUsers: () => apiCall('/admin/users'),
+  getUserById: (id) => apiCall(`/admin/users/${id}`),
+  updateUser: (id, userData) => apiCall(`/admin/users/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(userData),
+  }),
+  deleteUser: (id) => apiCall(`/admin/users/${id}`, {
+    method: 'DELETE',
+  }),
+  updateUserRole: (id, role) => apiCall(`/admin/users/${id}/role`, {
+    method: 'PUT',
+    body: JSON.stringify({ role }),
+  }),
+  getAllEvents: () => apiCall('/admin/events'),
+  getEventById: (id) => apiCall(`/admin/events/${id}`),
+  updateEvent: (id, eventData) => apiCall(`/admin/events/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(eventData),
+  }),
+  deleteEvent: (id) => apiCall(`/admin/events/${id}`, {
+    method: 'DELETE',
+  }),
+  getAllVendors: () => apiCall('/admin/vendors'),
+  getVendorById: (id) => apiCall(`/admin/vendors/${id}`),
+  updateVendor: (id, vendorData) => apiCall(`/admin/vendors/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(vendorData),
+  }),
+  deleteVendor: (id) => apiCall(`/admin/vendors/${id}`, {
+    method: 'DELETE',
+  }),
+  getSettings: () => apiCall('/admin/settings'),
+  updateSettings: (settings) => apiCall('/admin/settings', {
+    method: 'PUT',
+    body: JSON.stringify(settings),
+  }),
+  getLogs: () => apiCall('/admin/logs'),
 };
+
+// Default export for easier imports
+const api = {
+  get: (endpoint) => apiCall(endpoint),
+  post: (endpoint, data) => apiCall(endpoint, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  put: (endpoint, data) => apiCall(endpoint, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  }),
+  delete: (endpoint) => apiCall(endpoint, {
+    method: 'DELETE',
+  }),
+  user: userAPI,
+  vendor: vendorAPI,
+  event: eventAPI,
+  contract: contractAPI,
+  chatbot: chatbotAPI,
+  calendar: calendarAPI,
+  contact: contactAPI,
+  admin: adminAPI,
+  auth: auth,
+};
+
+export default api;

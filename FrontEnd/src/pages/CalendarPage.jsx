@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { calendarAPI, userAPI, eventAPI, auth } from '../services/api';
-import BackButton from '../components/BackButton';
 import Card from '../components/Card';
 import FormInput from '../components/FormInput';
 import CalendarView from '../components/CalendarView';
-import { Plus, Calendar, Clock, User, Eye } from 'lucide-react';
+import { Plus, Calendar, Clock, User, Eye, MapPin } from 'lucide-react';
 
 const CalendarPage = () => {
   const [events, setEvents] = useState([]);
@@ -74,10 +73,13 @@ const CalendarPage = () => {
 
   const fetchUserEvents = async (userId) => {
     try {
-      const data = await calendarAPI.getByUser(userId);
+      console.log('Fetching events for user:', userId); // Debug log
+      const data = await eventAPI.getByUser(userId);
+      console.log('Fetched events:', data); // Debug log
       setEvents(data);
     } catch (error) {
       console.error('Failed to fetch calendar events:', error);
+      setEvents([]); // Set empty array on error
     }
   };
 
@@ -90,10 +92,27 @@ const CalendarPage = () => {
     e.preventDefault();
     try {
       const user = auth.getUser();
-      const payload = { ...formData, userId: formData.userId || selectedUserId || (user && (user.id || user._id)) };
-      await calendarAPI.addEvent(payload);
+      const userId = formData.userId || selectedUserId || (user && (user.id || user._id));
+      
+      // Create event object that matches the backend Event entity
+      const eventData = {
+        name: formData.eventTitle,
+        description: `Calendar event: ${formData.eventTitle}`,
+        startDate: formData.eventDate,
+        endDate: formData.eventDate, // Use same date for end date
+        location: 'Calendar Event',
+        budget: 0,
+        userId: userId
+      };
+      
+      console.log('Creating event with data:', eventData); // Debug log
+      
+      // Use eventAPI.create instead of calendarAPI.addEvent
+      await eventAPI.create(eventData);
+      
       setFormData({ userId: '', eventTitle: '', eventDate: '' });
       setShowForm(false);
+      
       // Refresh both calendar events and all events
       await Promise.all([
         fetchUserEvents(selectedUserId),
@@ -101,6 +120,7 @@ const CalendarPage = () => {
       ]);
     } catch (error) {
       console.error('Failed to add calendar event:', error);
+      alert('Failed to add event. Please try again.');
     }
   };
 
@@ -152,7 +172,6 @@ const CalendarPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <BackButton />
         
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -314,27 +333,42 @@ const CalendarPage = () => {
             {/* Calendar Events */}
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Calendar Events</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {events.map((event) => (
-                  <Card key={event._id} className="hover:shadow-lg transition-shadow">
-                    <div className="flex items-start space-x-4">
-                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Calendar className="h-6 w-6 text-blue-600" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 mb-2">{event.eventTitle}</h3>
-                        <div className="flex items-center text-sm text-gray-600 mb-2">
-                          <Clock className="h-4 w-4 mr-2" />
-                          <span>{formatDate(event.eventDate)}</span>
+              {events.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {events.map((event) => (
+                    <Card key={event.id || event._id} className="hover:shadow-lg transition-shadow">
+                      <div className="flex items-start space-x-4">
+                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <Calendar className="h-6 w-6 text-blue-600" />
                         </div>
-                        <div className="text-xs text-gray-500">
-                          Created: {new Date(event.createdAt).toLocaleDateString()}
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900 mb-2">{event.name || event.eventTitle || 'Untitled Event'}</h3>
+                          <p className="text-sm text-gray-600 mb-2">{event.description || 'No description'}</p>
+                          <div className="flex items-center text-sm text-gray-600 mb-2">
+                            <Clock className="h-4 w-4 mr-2" />
+                            <span>{formatDate(event.startDate || event.eventDate)}</span>
+                          </div>
+                          {event.location && (
+                            <div className="flex items-center text-sm text-gray-600 mb-2">
+                              <MapPin className="h-4 w-4 mr-2" />
+                              <span>{event.location}</span>
+                            </div>
+                          )}
+                          <div className="text-xs text-gray-500">
+                            Created: {new Date(event.createdAt || Date.now()).toLocaleDateString()}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No calendar events</h3>
+                  <p className="text-gray-600">Create events to see them here.</p>
+                </div>
+              )}
             </div>
 
             {allEvents.length === 0 && events.length === 0 && (

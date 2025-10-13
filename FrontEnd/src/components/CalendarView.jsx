@@ -45,7 +45,7 @@ const CalendarView = ({ events = [], onDateClick, onEventClick }) => {
 
   const getEventsForDate = (date) => {
     return events.filter(event => {
-      const eventDate = new Date(event.startDate || event.date);
+      const eventDate = new Date(event.startDate || event.date || event.eventDate);
       return isSameDay(eventDate, date);
     });
   };
@@ -72,7 +72,7 @@ const CalendarView = ({ events = [], onDateClick, onEventClick }) => {
   };
 
   const formatEventTime = (event) => {
-    const eventDate = new Date(event.startDate || event.date);
+    const eventDate = new Date(event.startDate || event.date || event.eventDate);
     return eventDate.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit'

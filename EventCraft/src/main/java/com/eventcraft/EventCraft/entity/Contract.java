@@ -19,6 +19,9 @@ public class Contract {
     private String id;  // MongoDB uses String/ObjectId instead of Integer
 
     @DBRef
+    private User user; // User who created the contract
+
+    @DBRef
     private Event event;
 
     @DBRef

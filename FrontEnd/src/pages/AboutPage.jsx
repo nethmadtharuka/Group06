@@ -1,12 +1,10 @@
 import React from 'react';
-import BackButton from '../components/BackButton';
 import { Calendar, Users, Store, FileText, MessageSquare, Clock, Star, Award, Target, Heart } from 'lucide-react';
 
 const AboutPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <BackButton />
         
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">About EventCraft</h1>

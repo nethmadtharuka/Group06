@@ -98,6 +98,25 @@ public class UserController {
         }
     }
 
+    // Test endpoint to create an admin user
+    @PostMapping("/test-admin")
+    public ResponseEntity<?> createTestAdmin() {
+        User adminUser = new User();
+        adminUser.setUsername("admin");
+        adminUser.setEmail("admin@eventcraft.com");
+        adminUser.setPassword("admin123");
+        adminUser.setFullName("Administrator");
+        adminUser.setRole(User.Role.ADMIN);
+
+        try {
+            User createdUser = userService.createUser(adminUser);
+            createdUser.setPassword(null); // Remove password from response
+            return ResponseEntity.ok("Admin user created: " + createdUser);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error creating admin user: " + e.getMessage());
+        }
+    }
+
     @PostMapping
     public User createUser(@RequestBody User user) {
         return userService.createUser(user);

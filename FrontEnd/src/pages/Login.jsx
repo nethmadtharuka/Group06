@@ -12,18 +12,34 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-  const res = await userAPI.login({ usernameOrEmail, password });
-      // expect response like { token, user: { id|_id, fullName, ... } }
-      if (res && (res.token || res.user)) {
-        const token = res.token || res.accessToken || null;
-        const user = res.user || (res.id ? { id: res.id } : (res._id ? { id: res._id } : null));
-        auth.saveAuth({ token, user });
-        navigate('/');
-      } else if (res && (res.id || res._id)) {
-        // response contains user object with id
-        const id = res.id || res._id;
-        auth.saveAuth({ token: null, user: { id, fullName: res.fullName, username: res.username, email: res.email } });
-        navigate('/');
+      const res = await userAPI.login({ usernameOrEmail, password });
+      console.log('Login response:', res); // Debug log
+      
+      // The backend returns the full User object directly
+      if (res && res.id) {
+        // Remove password from user object for security
+        const userData = {
+          id: res.id,
+          username: res.username,
+          email: res.email,
+          fullName: res.fullName,
+          phone: res.phone,
+          role: res.role,
+          createdAt: res.createdAt,
+          updatedAt: res.updatedAt
+        };
+        
+        console.log('User data to store:', userData); // Debug log
+        auth.saveAuth({ token: null, user: userData });
+        
+        // Redirect based on user role
+        if (userData.role === 'ADMIN') {
+          console.log('Admin user detected, redirecting to admin panel');
+          navigate('/admin');
+        } else {
+          console.log('Regular user, redirecting to home');
+          navigate('/');
+        }
       } else {
         alert('Login failed');
       }

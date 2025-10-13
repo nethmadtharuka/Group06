@@ -1,381 +1,348 @@
-import React, { useState } from 'react';
-import { CreditCard, Lock, ArrowLeft, X, HelpCircle, Calendar, MapPin, Phone, Mail } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import BackButton from '../components/BackButton';
+import { 
+  CreditCard, 
+  CheckCircle, 
+  AlertCircle, 
+  DollarSign, 
+  Calendar, 
+  User, 
+  Building2,
+  Lock,
+  Shield,
+  FileText,
+  Sparkles,
+  Zap,
+  Star,
+  TrendingUp,
+  Clock
+} from 'lucide-react';
+import { contractAPI } from '../services/api';
 
 const PaymentPage = () => {
-  const [billingData, setBillingData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    country: ''
-  });
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [paymentData, setPaymentData] = useState(null);
+  const [contract, setContract] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [error, setError] = useState('');
 
-  const [formData, setFormData] = useState({
-    cardNumber: '',
-    cardholderName: '',
-    expiryDate: '',
-    cvv: '',
-    saveCard: true
-  });
-  
-  const [submitted, setSubmitted] = useState(false);
+  useEffect(() => {
+    console.log('PaymentPage - location.state:', location.state); // Debug log
+    if (location.state) {
+      setPaymentData(location.state);
+      console.log('PaymentPage - loading contract with ID:', location.state.contractId); // Debug log
+      loadContract(location.state.contractId);
+    } else {
+      console.log('PaymentPage - no location.state, redirecting to contracts'); // Debug log
+      navigate('/contracts');
+    }
+  }, [location.state, navigate]);
 
-  const handleBillingChange = (e) => {
-    const { name, value } = e.target;
-    setBillingData({
-      ...billingData,
-      [name]: value
-    });
+  const loadContract = async (contractId) => {
+    try {
+      console.log('PaymentPage - fetching contract with ID:', contractId); // Debug log
+      const contractData = await contractAPI.getContractById(contractId);
+      console.log('PaymentPage - contract data received:', contractData); // Debug log
+      setContract(contractData);
+    } catch (err) {
+      console.error('Error loading contract:', err);
+      setError('Failed to load contract details');
+    }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    
-    let formattedValue = value;
-    
-    if (name === 'cardNumber') {
-      formattedValue = value.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim();
-      if (formattedValue.length > 19) return;
-    }
-    
-    if (name === 'expiryDate') {
-      formattedValue = value.replace(/\D/g, '');
-      if (formattedValue.length >= 2) {
-        formattedValue = formattedValue.slice(0, 2) + '/' + formattedValue.slice(2, 4);
+  const handlePayment = async () => {
+    setIsProcessing(true);
+    setError('');
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setPaymentSuccess(true);
+      
+      if (paymentData.contractId) {
+        try {
+          await contractAPI.updateContractStatus(paymentData.contractId, true);
+        } catch (err) {
+          console.error('Error updating contract status:', err);
+        }
       }
-      if (formattedValue.length > 5) return;
+    } catch (err) {
+      setError('Payment failed. Please try again.');
+    } finally {
+      setIsProcessing(false);
     }
-    
-    if (name === 'cvv') {
-      formattedValue = value.replace(/\D/g, '').slice(0, 4);
-    }
-    
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : formattedValue
-    });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Payment form submitted:', { billingData, formData });
-    setSubmitted(true);
-  };
-
-  const handleBack = () => {
-    setSubmitted(false);
-  };
-
-  if (submitted) {
+  if (paymentSuccess) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        {/* Header */}
-        <div className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="bg-teal-600 rounded-lg p-2">
-                  <Calendar className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-gray-900">EventCraft</h1>
-                  <p className="text-sm text-gray-500">Event Management</p>
-                </div>
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-100 flex items-center justify-center">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-12 border border-white/20">
+            <div className="relative mb-8">
+              <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <CheckCircle className="h-12 w-12 text-white" />
+              </div>
+              <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center animate-bounce">
+                <Sparkles className="h-4 w-4 text-white" />
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Success Message */}
-        <div className="flex items-center justify-center px-4 py-16">
-          <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Lock className="h-8 w-8 text-green-600" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Payment Saved!</h2>
-            <p className="text-gray-600 mb-6">
-              Your payment information has been securely saved.
+            
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-4">
+              Payment Successful!
+            </h1>
+            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+              Your payment has been processed successfully. The contract has been signed and is now active.
             </p>
-            <button
-              onClick={() => setSubmitted(false)}
-              className="w-full bg-teal-600 hover:bg-teal-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors"
-            >
-              Add Another Card
-            </button>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onClick={() => navigate('/contracts')}
+                className="group bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center space-x-2"
+              >
+                <FileText className="h-5 w-5 group-hover:scale-110 transition-transform duration-200" />
+                <span>View Contracts</span>
+              </button>
+              <button
+                onClick={() => navigate('/vendors')}
+                className="group bg-gradient-to-r from-gray-600 to-slate-600 hover:from-gray-700 hover:to-slate-700 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center space-x-2"
+              >
+                <Building2 className="h-5 w-5 group-hover:scale-110 transition-transform duration-200" />
+                <span>Browse Vendors</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-            </div>
+  if (!paymentData) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-pink-50 to-rose-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="h-8 w-8 text-red-600" />
           </div>
+          <p className="text-gray-600 font-medium">No payment information found. Redirecting...</p>
         </div>
       </div>
+    );
+  }
 
-      {/* Page Title */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-4xl font-bold text-gray-900 text-center mb-4">Payment</h1>
-        <p className="text-center text-gray-600 max-w-2xl mx-auto">
-          Complete your billing information and payment details to secure your event booking.
-        </p>
-      </div>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <BackButton />
+        
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl mb-6 shadow-lg">
+            <CreditCard className="h-8 w-8 text-white" />
+          </div>
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-4">
+            Secure Payment
+          </h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Complete your contract payment with our secure, encrypted payment system
+          </p>
+        </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Billing Information */}
-          <div>
-            <div className="bg-white rounded-lg shadow-sm p-8">
-              <div className="flex items-center space-x-2 mb-6">
-                <Mail className="h-6 w-6 text-teal-600" />
-                <h2 className="text-2xl font-bold text-gray-900">Billing Information</h2>
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+          {/* Payment Summary */}
+          <div className="xl:col-span-1">
+            <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white/20 sticky top-8">
+              <div className="flex items-center space-x-4 mb-8">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center">
+                  <DollarSign className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Payment Summary</h2>
+                  <p className="text-gray-600">Review your order details</p>
+                </div>
               </div>
-              
+
+              {contract && (
+                <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <FileText className="h-5 w-5 text-blue-600" />
+                    <span className="font-semibold text-gray-900">Contract Details</span>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <Building2 className="h-4 w-4 text-gray-500" />
+                      <div>
+                        <p className="text-sm text-gray-600">Vendor</p>
+                        <p className="font-medium text-gray-900">{contract.vendor?.companyName || 'Unknown'}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <Calendar className="h-4 w-4 text-gray-500" />
+                      <div>
+                        <p className="text-sm text-gray-600">Event</p>
+                        <p className="font-medium text-gray-900">{contract.event?.name || 'No specific event'}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-3 h-3 rounded-full ${contract.signed ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
+                      <div>
+                        <p className="text-sm text-gray-600">Status</p>
+                        <p className="font-medium text-gray-900">{contract.signed ? 'Signed' : 'Pending'}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Full Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="fullName"
-                    value={billingData.fullName}
-                    onChange={handleBillingChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    placeholder="Enter your full name"
-                  />
+                <div className="flex justify-between items-center py-4 border-b border-gray-200">
+                  <span className="text-gray-600 font-medium">Service</span>
+                  <span className="font-semibold text-gray-900">{paymentData.description}</span>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={billingData.email}
-                    onChange={handleBillingChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    placeholder="your.email@example.com"
-                  />
+                
+                <div className="flex justify-between items-center py-4 border-b border-gray-200">
+                  <span className="text-gray-600 font-medium">Contract Fee</span>
+                  <span className="font-semibold text-gray-900">${paymentData.amount}</span>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={billingData.phone}
-                    onChange={handleBillingChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    placeholder="+1 (555) 123-4567"
-                  />
+                
+                <div className="flex justify-between items-center py-4 border-b border-gray-200">
+                  <span className="text-gray-600 font-medium">Processing Fee</span>
+                  <span className="font-semibold text-green-600">FREE</span>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Street Address <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="address"
-                    value={billingData.address}
-                    onChange={handleBillingChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    placeholder="123 Main Street"
-                  />
+                
+                <div className="flex justify-between items-center py-6 bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl px-4">
+                  <span className="text-xl font-bold text-gray-900">Total</span>
+                  <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                    ${paymentData.amount}
+                  </span>
                 </div>
+              </div>
 
-                <div className="grid grid-cols-2 gap-4">
+              <div className="mt-8 p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-200">
+                <div className="flex items-start space-x-3">
+                  <Shield className="h-6 w-6 text-green-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      City <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="city"
-                      value={billingData.city}
-                      onChange={handleBillingChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                      placeholder="New York"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      State <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="state"
-                      value={billingData.state}
-                      onChange={handleBillingChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                      placeholder="NY"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      ZIP Code <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="zipCode"
-                      value={billingData.zipCode}
-                      onChange={handleBillingChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                      placeholder="10001"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Country <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="country"
-                      value={billingData.country}
-                      onChange={handleBillingChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                      placeholder="United States"
-                    />
+                    <h3 className="font-semibold text-green-900 mb-2">Bank-Level Security</h3>
+                    <p className="text-sm text-green-800 leading-relaxed">
+                      Your payment is protected by 256-bit SSL encryption and processed through secure payment gateways.
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Payment Information */}
-          <div>
-            <div className="bg-white rounded-lg shadow-sm p-8">
-              <div className="flex items-center space-x-2 mb-6">
-                <CreditCard className="h-6 w-6 text-teal-600" />
-                <h2 className="text-2xl font-bold text-gray-900">Payment Details</h2>
-              </div>
-
-              <div className="flex items-center justify-center space-x-2 text-teal-600 mb-6 p-3 bg-teal-50 rounded-lg">
-                <div className="w-5 h-5 bg-teal-600 rounded-full flex items-center justify-center flex-shrink-0">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
+          {/* Payment Form */}
+          <div className="xl:col-span-2">
+            <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white/20">
+              <div className="flex items-center space-x-4 mb-8">
+                <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center">
+                  <CreditCard className="h-6 w-6 text-white" />
                 </div>
-                <span className="font-medium text-sm">Your payment information is safe with us</span>
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                <div className="flex items-center space-x-4 flex-wrap">
-                  <div className="text-blue-600 font-bold text-lg">VISA</div>
-                  <div className="flex space-x-1">
-                    <div className="w-6 h-6 bg-red-500 rounded-full opacity-80"></div>
-                    <div className="w-6 h-6 bg-yellow-500 rounded-full opacity-80 -ml-2"></div>
-                  </div>
-                  <div className="text-blue-700 font-bold text-sm border-2 border-blue-700 px-2 py-1">UnionPay</div>
-                  <div className="text-blue-600 font-bold text-lg">AMEX</div>
-                  <div className="flex space-x-1">
-                    <div className="w-6 h-6 bg-red-600 rounded-sm"></div>
-                    <div className="w-6 h-6 bg-blue-600 rounded-sm -ml-2"></div>
-                    <div className="w-6 h-6 bg-green-600 rounded-sm -ml-2"></div>
-                  </div>
-                  <div className="flex items-center text-gray-600 ml-auto">
-                    <span className="text-sm">Full List</span>
-                    <svg className="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Payment Details</h2>
+                  <p className="text-gray-600">Enter your payment information</p>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <input
-                    type="text"
-                    name="cardNumber"
-                    value={formData.cardNumber}
-                    onChange={handleInputChange}
-                    placeholder="Card number"
-                    className="w-full px-4 py-4 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
+              {error && (
+                <div className="mb-8 bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-2xl p-4 flex items-start space-x-3 shadow-lg">
+                  <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <AlertCircle className="h-5 w-5 text-red-600" />
+                  </div>
+                  <p className="text-red-700 font-medium">{error}</p>
                 </div>
+              )}
 
+              <form className="space-y-8">
                 <div>
-                  <input
-                    type="text"
-                    name="cardholderName"
-                    value={formData.cardholderName}
-                    onChange={handleInputChange}
-                    placeholder="Cardholder name"
-                    className="w-full px-4 py-4 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
-                </div>
-
-                <div>
-                  <input
-                    type="text"
-                    name="expiryDate"
-                    value={formData.expiryDate}
-                    onChange={handleInputChange}
-                    placeholder="MM/YY"
-                    className="w-full px-4 py-4 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
-                </div>
-
-                <div>
-                  <div className="flex items-center border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-teal-500">
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                    Card Number
+                  </label>
+                  <div className="relative">
+                    <CreditCard className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                     <input
                       type="text"
-                      name="cvv"
-                      value={formData.cvv}
-                      onChange={handleInputChange}
-                      placeholder="CVV"
-                      className="w-full px-4 py-4 text-base border-none rounded-lg focus:outline-none"
+                      placeholder="1234 5678 9012 3456"
+                      className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white text-lg"
+                      disabled
                     />
-                    <button
-                      type="button"
-                      className="px-4 text-gray-400 hover:text-gray-600"
-                    >
-                      <HelpCircle className="h-5 w-5" />
-                    </button>
                   </div>
                 </div>
 
-                <div className="bg-gray-50 rounded-lg px-4 py-4 flex items-center justify-between border border-gray-200">
-                  <span className="text-base text-gray-900">Save card details</span>
-                  <label className="relative inline-flex items-center cursor-pointer">
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">
+                      Expiry Date
+                    </label>
                     <input
-                      type="checkbox"
-                      name="saveCard"
-                      checked={formData.saveCard}
-                      onChange={handleInputChange}
-                      className="sr-only peer"
+                      type="text"
+                      placeholder="MM/YY"
+                      className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white text-lg"
+                      disabled
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">
+                      CVV
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="123"
+                      className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white text-lg"
+                      disabled
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                    Cardholder Name
                   </label>
+                  <input
+                    type="text"
+                    placeholder="John Doe"
+                    className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white text-lg"
+                    disabled
+                  />
+                </div>
+
+                <div className="bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-2xl p-6">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Lock className="h-5 w-5 text-yellow-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-yellow-900 mb-2">Demo Payment System</h3>
+                      <p className="text-sm text-yellow-800 leading-relaxed">
+                        This is a demonstration payment system. No real payment will be processed. 
+                        Click "Process Payment" to simulate the payment flow and complete your contract.
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 <button
-                  onClick={handleSubmit}
-                  className="w-full bg-teal-600 hover:bg-teal-700 text-white py-4 px-6 rounded-lg font-semibold text-lg transition-colors mt-6"
+                  type="button"
+                  onClick={handlePayment}
+                  disabled={isProcessing}
+                  className="group w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white py-5 px-8 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center space-x-3 shadow-lg hover:shadow-xl transform hover:-translate-y-1 disabled:transform-none disabled:cursor-not-allowed text-lg"
                 >
-                  Save & Confirm Payment
+                  {isProcessing ? (
+                    <>
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                      <span>Processing Payment...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="h-6 w-6 group-hover:scale-110 transition-transform duration-200" />
+                      <span>Process Payment - ${paymentData.amount}</span>
+                      <Zap className="h-6 w-6 group-hover:scale-110 transition-transform duration-200" />
+                    </>
+                  )}
                 </button>
-              </div>
+              </form>
             </div>
           </div>
         </div>

@@ -14,29 +14,33 @@ import ContactPage from "./pages/ContactPage.jsx";
 import PaymentPage from "./pages/PaymentPage.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
+import AdminPanel from "./pages/AdminPanel.jsx";
 
 export function AppRouter() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
         <HeaderBar />
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          {/* users route removed from primary nav but kept for direct access if needed */}
-          <Route path="/users" element={<UsersPage />} />
-          <Route path="/vendors" element={<VendorsPage />} />
-          <Route path="/events" element={<EventsPage />} />
-          <Route path="/contracts" element={<ContractsPage />} />
-          <Route path="/chatbot" element={<ChatbotPage />} />
-          <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/payment" element={<PaymentPage />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-        </Routes>
+        <div className="pt-16">
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            {/* users route removed from primary nav but kept for direct access if needed */}
+            <Route path="/users" element={<UsersPage />} />
+            <Route path="/vendors" element={<VendorsPage />} />
+            <Route path="/events" element={<EventsPage />} />
+            <Route path="/contracts" element={<ContractsPage />} />
+            <Route path="/chatbot" element={<ChatbotPage />} />
+            <Route path="/calendar" element={<CalendarPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/payment" element={<PaymentPage />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/admin" element={<AdminPanel />} />
+          </Routes>
+        </div>
       </div>
     </BrowserRouter>
   );
