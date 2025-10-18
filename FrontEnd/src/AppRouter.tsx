@@ -15,6 +15,7 @@ import PaymentPage from "./pages/PaymentPage.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
 import AdminPanel from "./pages/AdminPanel.jsx";
+import ProfilePage from "./pages/ProfilePage.jsx";
 
 export function AppRouter() {
   return (
@@ -39,6 +40,7 @@ export function AppRouter() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/profile" element={<ProfilePage />} />
           </Routes>
         </div>
       </div>

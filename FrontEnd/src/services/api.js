@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = 'http://localhost:8081/api';
 
 // Simple client-side auth helpers for storing user id
 export const auth = {
@@ -100,6 +100,31 @@ export const userAPI = {
     method: 'POST',
     body: JSON.stringify(resetData),
   }),
+  
+  // Profile Management APIs
+  getProfile: (userId) => apiCall(`/users/${userId}/profile`),
+  updateProfile: (userId, profileData) => apiCall(`/users/${userId}/profile`, {
+    method: 'PUT',
+    body: JSON.stringify(profileData),
+  }),
+  uploadProfilePicture: async (userId, file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const token = auth.getToken();
+    const headers = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    
+    return fetch(`${API_BASE_URL}/users/${userId}/profile/picture`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+  },
+  deleteProfilePicture: (userId) => apiCall(`/users/${userId}/profile/picture`, {
+    method: 'DELETE',
+  }),
+  getProfilePicture: (filename) => `${API_BASE_URL}/users/profile/picture/${filename}`,
 };
 
 // Vendor APIs

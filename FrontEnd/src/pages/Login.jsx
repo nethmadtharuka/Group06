@@ -32,6 +32,9 @@ const Login = () => {
         console.log('User data to store:', userData); // Debug log
         auth.saveAuth({ token: null, user: userData });
         
+        // Store userId separately for easier access
+        localStorage.setItem('userId', userData.id);
+        
         // Redirect based on user role
         if (userData.role === 'ADMIN') {
           console.log('Admin user detected, redirecting to admin panel');

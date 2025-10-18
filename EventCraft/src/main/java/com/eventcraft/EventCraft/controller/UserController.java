@@ -2,14 +2,25 @@ package com.eventcraft.EventCraft.controller;
 
 import com.eventcraft.EventCraft.dto.ForgotPasswordRequest;
 import com.eventcraft.EventCraft.dto.LoginRequest;
+import com.eventcraft.EventCraft.dto.ProfileResponse;
+import com.eventcraft.EventCraft.dto.ProfileUpdateRequest;
 import com.eventcraft.EventCraft.dto.ResetPasswordRequest;
 import com.eventcraft.EventCraft.entity.User;
 import com.eventcraft.EventCraft.service.PasswordResetService;
 import com.eventcraft.EventCraft.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 
@@ -180,5 +191,70 @@ public class UserController {
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable String id) {
         userService.deleteUser(id);
+    }
+
+    // Profile Management Endpoints
+    @GetMapping("/{id}/profile")
+    public ResponseEntity<?> getUserProfile(@PathVariable String id) {
+        Optional<User> userOpt = userService.getUserById(id);
+        if (userOpt.isPresent()) {
+            ProfileResponse profile = ProfileResponse.fromUser(userOpt.get());
+            return ResponseEntity.ok(profile);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/{id}/profile")
+    public ResponseEntity<?> updateUserProfile(@PathVariable String id, @RequestBody ProfileUpdateRequest profileRequest) {
+        try {
+            Optional<User> updatedUserOpt = userService.updateProfile(id, profileRequest);
+            if (updatedUserOpt.isPresent()) {
+                ProfileResponse profile = ProfileResponse.fromUser(updatedUserOpt.get());
+                return ResponseEntity.ok(profile);
+            }
+            return ResponseEntity.notFound().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{id}/profile/picture")
+    public ResponseEntity<?> uploadProfilePicture(@PathVariable String id, @RequestParam("file") MultipartFile file) {
+        try {
+            Optional<String> filePathOpt = userService.uploadProfilePicture(id, file);
+            if (filePathOpt.isPresent()) {
+                return ResponseEntity.ok().body(Map.of("profilePicture", filePathOpt.get()));
+            }
+            return ResponseEntity.notFound().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}/profile/picture")
+    public ResponseEntity<?> deleteProfilePicture(@PathVariable String id) {
+        boolean deleted = userService.deleteProfilePicture(id);
+        if (deleted) {
+            return ResponseEntity.ok().body(Map.of("message", "Profile picture deleted successfully"));
+        }
+        return ResponseEntity.badRequest().body(Map.of("error", "Failed to delete profile picture"));
+    }
+
+    @GetMapping("/profile/picture/{filename}")
+    public ResponseEntity<Resource> getProfilePicture(@PathVariable String filename) {
+        try {
+            Path filePath = Paths.get("uploads/profile-pictures").resolve(filename);
+            Resource resource = new UrlResource(filePath.toUri());
+            
+            if (resource.exists() && resource.isReadable()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                        .body(resource);
+            }
+            return ResponseEntity.notFound().build();
+        } catch (MalformedURLException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

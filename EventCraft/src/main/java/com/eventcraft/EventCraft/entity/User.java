@@ -24,6 +24,10 @@ public class User {
 
     private String fullName;
     private String phone;
+    private String profilePicture; // URL or path to profile picture
+    private String bio; // User biography/description
+    private String address; // User address
+    private String dateOfBirth; // User date of birth
 
     @Builder.Default
     private Role role = Role.CUSTOMER;
