@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Calendar, Users, Store, FileText, MessageSquare, Clock, Info, Phone, User, Trash2 } from 'lucide-react';
+import { Menu, X, Calendar, Users, Store, FileText, MessageSquare, Clock, Info, Phone, User, Trash2, Bell, CheckCircle2 } from 'lucide-react';
 import { auth, userAPI } from '../services/api';
 
 const HeaderBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [scrolled, setScrolled] = useState(false);
+  const [hasUnread, setHasUnread] = useState(() => {
+    try {
+      return localStorage.getItem('eventcraft_has_unread_notifications') === 'true';
+    } catch (e) {
+      return false;
+    }
+  });
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -19,6 +26,12 @@ const HeaderBar = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
+    const handleStorage = (ev) => {
+      if (ev.key === 'eventcraft_has_unread_notifications') {
+        setHasUnread(ev.newValue === 'true');
+      }
+    };
+    window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -124,6 +137,18 @@ const HeaderBar = () => {
               </div>
             ) : (
               <div className="flex items-center space-x-3">
+                <Link
+                  to="/notifications"
+                  className="relative p-2 rounded-xl text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
+                  aria-label="Notifications"
+                >
+                  <Bell className="h-5 w-5" />
+                  {hasUnread && (
+                    <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 text-white">
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                    </span>
+                  )}
+                </Link>
                 <Link
                   to="/login"
                   className="text-gray-600 hover:text-blue-600 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 hover:bg-blue-50"
