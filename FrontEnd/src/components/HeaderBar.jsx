@@ -114,6 +114,15 @@ const HeaderBar = () => {
                   </div>
                 </div>
                 
+                {/* Profile Link */}
+                <Link
+                  to="/profile"
+                  className="group bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center space-x-2"
+                >
+                  <User className="h-4 w-4" />
+                  <span>My Profile</span>
+                </Link>
+                
                 {/* Admin Panel Access */}
                 {user.role === 'ADMIN' && (
                   <Link
@@ -127,6 +136,7 @@ const HeaderBar = () => {
                 <button
                   onClick={() => {
                     auth.clearAuth();
+                    localStorage.removeItem('userId');
                     setUser(null);
                     navigate('/');
                   }}
@@ -218,6 +228,16 @@ const HeaderBar = () => {
                       </div>
                     </div>
                     
+                    {/* Profile Link for Mobile */}
+                    <Link
+                      to="/profile"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center space-x-2"
+                    >
+                      <User className="h-4 w-4" />
+                      <span>My Profile</span>
+                    </Link>
+                    
                     {/* Admin Panel Access for Mobile */}
                     {user.role === 'ADMIN' && (
                       <Link
@@ -232,6 +252,7 @@ const HeaderBar = () => {
                     <button
                       onClick={() => {
                         auth.clearAuth();
+                        localStorage.removeItem('userId');
                         setUser(null);
                         navigate('/');
                         setIsMenuOpen(false);
