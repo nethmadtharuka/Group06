@@ -1,5 +1,5 @@
 {
-  "name": "Event Craft",
+  "name": "magic-patterns-vite-template",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -10,17 +10,17 @@
     "preview": "npx vite preview"
   },
   "dependencies": {
-    "lucide-react": "^0.441.0",
+    "framer-motion": "^11.5.4",
+    "jspdf": "^3.0.3",
+    "lucide-react": "0.522.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.26.2",
-    "react-scroll": "^1.9.3"
+    "react-router-dom": "^6.26.2"
   },
   "devDependencies": {
     "@types/node": "^20.11.18",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
-    "@types/react-scroll": "^1.8.10",
     "@typescript-eslint/eslint-plugin": "^5.54.0",
     "@typescript-eslint/parser": "^5.54.0",
     "@vitejs/plugin-react": "^4.2.1",

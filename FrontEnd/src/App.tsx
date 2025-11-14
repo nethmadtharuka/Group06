@@ -1,5 +1,7 @@
-import { AppRouter } from './AppRouter';
-
+import React from 'react';
+import { VendorProfile } from './components/VendorProfile';
 export function App() {
-  return <AppRouter />;
+  return <div className="bg-[#0a0a0f] min-h-screen w-full text-white">
+      <VendorProfile />
+    </div>;
 }
