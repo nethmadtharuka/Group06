@@ -6,6 +6,7 @@ import { TabNavigation } from './TabNavigation';
 import { DetailsTab } from './tabs/DetailsTab';
 import { PackagesTab } from './tabs/PackagesTab';
 import { ReviewsTab } from './tabs/ReviewsTab';
+import { Loading } from './Loading';
 import { ChevronLeftIcon } from 'lucide-react';
 import { vendorAPI } from '../services/api';
 export const VendorProfile = () => {
@@ -31,9 +32,7 @@ export const VendorProfile = () => {
   }, [id]);
 
   if (loading) {
-    return <div className="flex flex-col min-h-screen w-full items-center justify-center">
-      <div className="text-white">Loading vendor...</div>
-    </div>;
+    return <Loading />;
   }
 
   return <div className="flex flex-col min-h-screen w-full">

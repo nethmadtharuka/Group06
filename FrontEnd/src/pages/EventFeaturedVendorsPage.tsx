@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronLeftIcon, StarIcon, DollarSignIcon } from 'lucide-react';
-import { Header } from '../components/Header';
 import { eventAPI, chatAPI } from '../services/api';
 
 export const EventFeaturedVendorsPage = () => {
@@ -68,27 +67,39 @@ export const EventFeaturedVendorsPage = () => {
     opacity: 1
   }} exit={{
     opacity: 0
-  }} className="flex flex-col min-h-screen bg-[#0a0a0f] w-full text-white">
-      <Header />
+  }} className="flex flex-col min-h-screen bg-transparent w-full text-white relative">
       <div className="relative h-96">
         <div className="absolute inset-0 bg-cover bg-center" style={{
         backgroundImage: 'url("https://images.unsplash.com/photo-1519741497674-611481863552?w=1200")'
       }}>
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-[#0a0a0f]"></div>
         </div>
-        <div className="relative z-10 px-8 py-6">
-          <Link to={`/event/${id}`} className="inline-flex items-center space-x-2 bg-gray-800/80 hover:bg-gray-700/80 px-4 py-2 rounded-lg transition-colors backdrop-blur-sm">
+        <div className="absolute top-6 left-6 z-20">
+          <Link to={`/event/${id}`} className="inline-flex items-center space-x-2 event-back-button-glass">
             <ChevronLeftIcon size={20} />
-            <span>Back to My Events</span>
+            <span>Back to Event</span>
           </Link>
         </div>
-        <div className="absolute bottom-10 left-10">
-          <span className="bg-purple-600 text-xs font-semibold py-1 px-3 rounded-full mb-4 inline-block">
+        <div className="absolute bottom-10 left-10 z-10">
+          <span className="bg-purple-600 text-xs font-semibold py-1 px-3 rounded-full mb-4 inline-block event-status-badge">
             {event?.status || 'EVENT'}
           </span>
-          <h1 className="text-5xl font-bold">{event?.name || 'Loading...'}</h1>
+          <h1 
+            className="text-5xl font-bold event-title-interactive"
+            style={{ fontFamily: '"Poppins", sans-serif' }}
+          >
+            {event?.name ? (
+              event.name.split(' ').map((word: string, index: number) => (
+                <span key={index} className="inline-block event-title-word mr-2">
+                  {word}
+                </span>
+              ))
+            ) : (
+              'Loading...'
+            )}
+          </h1>
           {event?.budget && (
-            <p className="text-gray-300 mt-2 flex items-center">
+            <p className="text-gray-300 mt-2 flex items-center event-budget">
               <DollarSignIcon size={20} className="mr-1" />
               Budget: {formatCurrency(event.budget)}
             </p>
@@ -98,13 +109,13 @@ export const EventFeaturedVendorsPage = () => {
       <div className="border-b border-gray-800">
         <div className="px-8">
           <nav className="flex space-x-8">
-            <Link to={`/event/${id}`} className="py-4 px-1 text-gray-400 hover:text-white transition-colors">
+            <Link to={`/event/${id}`} className="py-4 px-1 relative event-tab text-gray-400">
               Event Details
             </Link>
-            <Link to={`/event/${id}/bookings`} className="py-4 px-1 text-gray-400 hover:text-white transition-colors">
+            <Link to={`/event/${id}/bookings`} className="py-4 px-1 relative event-tab text-gray-400">
               Current Bookings
             </Link>
-            <button className="py-4 px-1 relative text-white font-medium">
+            <button className="py-4 px-1 relative event-tab text-white font-medium">
               Featured Vendors
               <motion.span layoutId="activeTab" className="absolute bottom-0 left-0 w-full h-1 bg-purple-600"></motion.span>
             </button>
@@ -233,5 +244,92 @@ export const EventFeaturedVendorsPage = () => {
           </>
         )}
       </main>
+      <style>{`
+        .event-back-button-glass {
+          position: relative;
+          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          padding: 12px 20px;
+          border-radius: 12px;
+          color: white;
+          font-weight: 500;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 
+                      0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+          overflow: hidden;
+        }
+        .event-back-button-glass::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+          transition: left 0.5s ease;
+        }
+        .event-back-button-glass:hover::before {
+          left: 100%;
+        }
+        .event-back-button-glass:hover {
+          transform: translateX(-4px) scale(1.05);
+          background: rgba(255, 255, 255, 0.15);
+          border-color: rgba(255, 255, 255, 0.3);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 
+                      0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+                      0 0 20px rgba(139, 92, 246, 0.3);
+        }
+        .event-status-badge {
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          cursor: default;
+        }
+        .event-status-badge:hover {
+          transform: scale(1.1) rotate(2deg);
+          box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+        }
+        .event-title-interactive {
+          transition: all 0.3s ease;
+        }
+        .event-title-word {
+          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+          display: inline-block;
+          cursor: default;
+        }
+        .event-title-word:hover {
+          transform: translateY(-6px) scale(1.1);
+          color: #a78bfa;
+          text-shadow: 0 8px 24px rgba(139, 92, 246, 0.5), 0 0 20px rgba(139, 92, 246, 0.3);
+        }
+        .event-budget {
+          transition: all 0.3s ease;
+        }
+        .event-budget:hover {
+          color: #c4b5fd;
+          transform: translateX(4px);
+        }
+        .event-tab {
+          transition: all 0.3s ease;
+          position: relative;
+        }
+        .event-tab::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background: linear-gradient(90deg, rgba(139, 92, 246, 0.8), rgba(167, 139, 250, 0.8));
+          transition: width 0.3s ease;
+        }
+        .event-tab:hover::after {
+          width: 100%;
+        }
+        .event-tab:hover {
+          transform: translateY(-2px);
+          color: #c4b5fd;
+        }
+      `}</style>
     </motion.div>;
 };

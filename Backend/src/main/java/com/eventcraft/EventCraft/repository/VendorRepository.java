@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface VendorRepository extends MongoRepository<Vendor, String> {
     boolean existsByUser_Id(String userId);
     java.util.Optional<Vendor> findByUser_Id(String userId);
+    java.util.List<Vendor> findByCompanyName(String companyName);
 }

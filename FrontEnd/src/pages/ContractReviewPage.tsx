@@ -54,7 +54,9 @@ export const ContractReviewPage = () => {
             selectedClauses: parsed.selectedClauses
           });
         } catch (error) {
-          console.error('Error parsing stored contract:', error);
+          if (import.meta.env.DEV) {
+            console.error('Error parsing stored contract:', error);
+          }
         }
       }
     }
@@ -79,12 +81,11 @@ export const ContractReviewPage = () => {
     };
 
     const formatCurrency = (amount: string) => {
-      if (!amount) return '$0.00';
+      if (!amount) return 'Rs. 0.00';
       const num = parseFloat(amount);
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2
+      return 'Rs. ' + new Intl.NumberFormat('en-LK', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
       }).format(num);
     };
 
@@ -234,7 +235,7 @@ export const ContractReviewPage = () => {
 
   if (!contract) {
     return (
-      <div className="flex flex-col min-h-screen bg-[#0a0a0f] w-full text-white">
+      <div className="flex flex-col min-h-screen bg-transparent w-full text-white relative">
         <Header />
         <main className="p-8 max-w-5xl mx-auto flex-1 flex items-center justify-center">
           <div className="text-center">
@@ -253,42 +254,32 @@ export const ContractReviewPage = () => {
     opacity: 1
   }} exit={{
     opacity: 0
-  }} className="flex flex-col min-h-screen bg-[#0a0a0f] w-full text-white">
+  }} className="flex flex-col min-h-screen bg-transparent w-full text-white">
       <Header />
       <main className="p-8 max-w-5xl mx-auto flex-1">
-        <motion.div initial={{
-        y: 20,
-        opacity: 0
-      }} animate={{
-        y: 0,
-        opacity: 1
-      }} transition={{
-        duration: 0.5
-      }} className="text-center mb-8">
-          <p className="text-purple-500 font-semibold mb-2">
+        <div className="text-center mb-8 contract-review-header">
+          <p className="text-purple-500 font-semibold mb-2 contract-review-subtitle">
             REVIEW YOUR CONTRACT
           </p>
-          <h1 className="text-4xl font-bold mb-4">
-            {contract.eventName} Event Contract
+          <h1 
+            className="text-4xl font-bold mb-4 contract-review-title"
+            style={{ fontFamily: '"Poppins", sans-serif' }}
+          >
+            <span className="inline-block contract-review-title-word">{contract.eventName}</span>{' '}
+            <span className="inline-block contract-review-title-word">Event</span>{' '}
+            <span className="inline-block contract-review-title-word">Contract</span>
           </h1>
-          <p className="text-gray-400">
-            Please review the terms and conditions of your event contract below.
-            Once you're satisfied, proceed to payment to finalize your booking.
+          <p className="text-gray-400 contract-review-description">
+            <span className="inline-block contract-review-description-phrase">Please review the terms and conditions</span>{' '}
+            <span className="inline-block contract-review-description-phrase">of your event contract below.</span>{' '}
+            <span className="inline-block contract-review-description-phrase">Once you're satisfied, proceed to payment</span>{' '}
+            <span className="inline-block contract-review-description-phrase">to finalize your booking.</span>
           </p>
-        </motion.div>
-        <motion.div initial={{
-        y: 20,
-        opacity: 0
-      }} animate={{
-        y: 0,
-        opacity: 1
-      }} transition={{
-        duration: 0.5,
-        delay: 0.1
-      }} className="bg-gray-900/50 border border-gray-700 rounded-lg p-8 mb-8">
+        </div>
+        <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-8 mb-8 contract-review-content">
           <div className="space-y-6 text-gray-300">
-            <div>
-              <h3 className="text-white font-bold mb-2">1. Parties</h3>
+            <div className="contract-review-section">
+              <h3 className="text-white font-bold mb-2 contract-review-section-title">1. Parties</h3>
               <p>
                 This Event Management Contract ("Contract") is entered into by
                 and between{' '}
@@ -302,36 +293,36 @@ export const ContractReviewPage = () => {
                 })}.
               </p>
             </div>
-            <div>
-              <h3 className="text-white font-bold mb-2">2. Event Details</h3>
-              <ul className="list-disc list-inside space-y-1 ml-4">
-                <li>
+            <div className="contract-review-section">
+              <h3 className="text-white font-bold mb-2 contract-review-section-title">2. Event Details</h3>
+              <ul className="list-disc list-inside space-y-1 ml-4 contract-review-list">
+                <li className="contract-review-list-item">
                   <span className="text-white font-medium">Event Name:</span>{' '}
                   {contract.eventName}
                 </li>
-                <li>
+                <li className="contract-review-list-item">
                   <span className="text-white font-medium">Date:</span>{' '}
                   {contract.eventDate}
                 </li>
-                <li>
+                <li className="contract-review-list-item">
                   <span className="text-white font-medium">Venue:</span>{' '}
                   {contract.venue}
                 </li>
-                <li>
+                <li className="contract-review-list-item">
                   <span className="text-white font-medium">Client Contact:</span>{' '}
                   {contract.clientName} ({contract.contactEmail})
                   {contract.phoneNumber && ` - ${contract.phoneNumber}`}
                 </li>
                 {contract.address && (
-                  <li>
+                  <li className="contract-review-list-item">
                     <span className="text-white font-medium">Client Address:</span>{' '}
                     {contract.address}
                   </li>
                 )}
               </ul>
             </div>
-            <div>
-              <h3 className="text-white font-bold mb-2">
+            <div className="contract-review-section">
+              <h3 className="text-white font-bold mb-2 contract-review-section-title">
                 3. Scope of Services
               </h3>
               <p>
@@ -340,37 +331,37 @@ export const ContractReviewPage = () => {
                 venue coordination, vendor management, and on-site logistics.
               </p>
             </div>
-            <div>
-              <h3 className="text-white font-bold mb-2">4. Payment Terms</h3>
-              <p className="mb-2">
+            <div className="contract-review-section">
+              <h3 className="text-white font-bold mb-2 contract-review-section-title">4. Payment Terms</h3>
+              <p className="mb-2 contract-review-paragraph">
                 The total fee for the services rendered under this Contract is{' '}
-                <span className="text-white font-bold">{contract.totalFee}</span>. The
+                <span className="text-white font-bold contract-review-highlight">{contract.totalFee}</span>. The
                 payment schedule is as follows:
               </p>
-              <ul className="list-disc list-inside space-y-1 ml-4">
-                <li>
+              <ul className="list-disc list-inside space-y-1 ml-4 contract-review-list">
+                <li className="contract-review-list-item">
                   <span className="text-white font-medium">Deposit:</span> A
                   non-refundable deposit of{' '}
-                  <span className="text-white font-bold">{contract.depositAmount}</span> is due
+                  <span className="text-white font-bold contract-review-highlight">{contract.depositAmount}</span> is due
                   upon signing this contract.
                 </li>
-                <li>
+                <li className="contract-review-list-item">
                   <span className="text-white font-medium">Final Balance:</span>{' '}
                   The remaining balance of{' '}
-                  <span className="text-white font-bold">{contract.remainingBalance}</span> is due
+                  <span className="text-white font-bold contract-review-highlight">{contract.remainingBalance}</span> is due
                   {contract.paymentDeadline && contract.paymentDeadline !== 'Not specified' ? (
-                    <> by <span className="text-white font-bold">{contract.paymentDeadline}</span>.</>
+                    <> by <span className="text-white font-bold contract-review-highlight">{contract.paymentDeadline}</span>.</>
                   ) : (
                     ' as specified in the payment schedule.'
                   )}
                 </li>
               </ul>
             </div>
-            <div>
-              <h3 className="text-white font-bold mb-2">5. Standard Clauses</h3>
-              <ul className="list-disc list-inside space-y-2 ml-4">
+            <div className="contract-review-section">
+              <h3 className="text-white font-bold mb-2 contract-review-section-title">5. Standard Clauses</h3>
+              <ul className="list-disc list-inside space-y-2 ml-4 contract-review-list">
                 {contract.clauses.cancellation && (
-                  <li>
+                  <li className="contract-review-list-item">
                     <span className="text-white font-medium">
                       Cancellation Policy:
                     </span>{' '}
@@ -380,7 +371,7 @@ export const ContractReviewPage = () => {
                   </li>
                 )}
                 {contract.clauses.liability && (
-                  <li>
+                  <li className="contract-review-list-item">
                     <span className="text-white font-medium">
                       Liability Insurance:
                     </span>{' '}
@@ -389,7 +380,7 @@ export const ContractReviewPage = () => {
                   </li>
                 )}
                 {contract.clauses.confidentiality && (
-                  <li>
+                  <li className="contract-review-list-item">
                     <span className="text-white font-medium">
                       Confidentiality:
                     </span>{' '}
@@ -399,22 +390,22 @@ export const ContractReviewPage = () => {
                   </li>
                 )}
                 {!contract.clauses.cancellation && !contract.clauses.liability && !contract.clauses.confidentiality && (
-                  <li className="italic text-gray-500">No standard clauses selected.</li>
+                  <li className="italic text-gray-500 contract-review-list-item">No standard clauses selected.</li>
                 )}
               </ul>
             </div>
-            <div>
-              <h3 className="text-white font-bold mb-2">6. Custom Clauses</h3>
+            <div className="contract-review-section">
+              <h3 className="text-white font-bold mb-2 contract-review-section-title">6. Custom Clauses</h3>
               {contract.customClauses ? (
-                <div className="bg-gray-800/50 p-4 rounded-lg">
+                <div className="bg-gray-800/50 p-4 rounded-lg contract-review-custom-clauses">
                   <p className="whitespace-pre-line">{contract.customClauses}</p>
                 </div>
               ) : (
                 <p className="italic text-gray-500">No custom clauses specified.</p>
               )}
             </div>
-            <div>
-              <h3 className="text-white font-bold mb-2">7. Agreement</h3>
+            <div className="contract-review-section">
+              <h3 className="text-white font-bold mb-2 contract-review-section-title">7. Agreement</h3>
               <p>
                 By proceeding, the Client agrees to the terms and conditions
                 outlined in this contract. This document constitutes the entire
@@ -422,24 +413,15 @@ export const ContractReviewPage = () => {
               </p>
             </div>
           </div>
-        </motion.div>
-        <motion.div initial={{
-        y: 20,
-        opacity: 0
-      }} animate={{
-        y: 0,
-        opacity: 1
-      }} transition={{
-        duration: 0.5,
-        delay: 0.2
-      }} className="flex items-center justify-center space-x-4">
-          <button onClick={() => navigate(-1)} className="flex items-center space-x-2 bg-gray-800 hover:bg-gray-700 text-white py-3 px-6 rounded-lg transition-colors">
+        </div>
+        <div className="flex items-center justify-center space-x-4 contract-review-actions">
+          <button onClick={() => navigate(-1)} className="flex items-center space-x-2 bg-gray-800 hover:bg-gray-700 text-white py-3 px-6 rounded-lg contract-review-back-button">
             <ChevronLeftIcon size={20} />
             <span>Go Back</span>
           </button>
           <button 
             onClick={handleExportPDF}
-            className="flex items-center space-x-2 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500 text-purple-400 py-3 px-6 rounded-lg transition-colors"
+            className="flex items-center space-x-2 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500 text-purple-400 py-3 px-6 rounded-lg contract-review-export-button"
           >
             <SaveIcon size={20} />
             <span>Export as PDF</span>
@@ -448,13 +430,178 @@ export const ContractReviewPage = () => {
             <Link 
               to="/payment" 
               state={{ contractData: contractData }}
-              className="flex items-center space-x-2 bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg transition-all transform hover:scale-105"
+              className="flex items-center space-x-2 bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg contract-review-pay-button"
             >
               <CreditCardIcon size={20} />
               <span>Proceed to Pay</span>
             </Link>
           )}
-        </motion.div>
+        </div>
       </main>
+      <style>{`
+        /* Header Animations */
+        .contract-review-header {
+          transition: all 0.3s ease;
+        }
+        .contract-review-subtitle {
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .contract-review-header:hover .contract-review-subtitle {
+          transform: translateY(-2px);
+          color: #c4b5fd;
+        }
+        .contract-review-title {
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .contract-review-title-word {
+          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+          display: inline-block;
+          cursor: default;
+        }
+        .contract-review-title-word:hover {
+          transform: translateY(-4px) scale(1.1) rotate(2deg);
+          color: #a78bfa;
+          text-shadow: 0 6px 20px rgba(139, 92, 246, 0.4), 0 0 16px rgba(139, 92, 246, 0.3);
+        }
+        .contract-review-description {
+          transition: all 0.3s ease;
+        }
+        .contract-review-description-phrase {
+          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+          display: inline-block;
+          cursor: default;
+        }
+        .contract-review-description-phrase:hover {
+          transform: translateY(-2px) scale(1.05);
+          color: #c4b5fd;
+          background: rgba(139, 92, 246, 0.1);
+          padding: 2px 4px;
+          border-radius: 4px;
+        }
+        
+        /* Content Card Animations */
+        .contract-review-content {
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .contract-review-content:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(139, 92, 246, 0.2);
+          border-color: rgba(139, 92, 246, 0.5);
+        }
+        
+        /* Section Animations */
+        .contract-review-section {
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .contract-review-section:hover {
+          transform: translateX(4px);
+        }
+        .contract-review-section-title {
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .contract-review-section:hover .contract-review-section-title {
+          color: #a78bfa;
+          transform: translateX(4px);
+        }
+        .contract-review-paragraph {
+          transition: all 0.3s ease;
+        }
+        .contract-review-section:hover .contract-review-paragraph {
+          color: #e9d5ff;
+        }
+        .contract-review-highlight {
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .contract-review-section:hover .contract-review-highlight {
+          transform: scale(1.05);
+          color: #c4b5fd;
+        }
+        
+        /* List Animations */
+        .contract-review-list {
+          transition: all 0.3s ease;
+        }
+        .contract-review-list-item {
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .contract-review-list-item:hover {
+          transform: translateX(4px);
+          color: #e9d5ff;
+        }
+        .contract-review-list-item:hover .contract-review-highlight {
+          transform: scale(1.1);
+          color: #a78bfa;
+        }
+        
+        /* Custom Clauses Box */
+        .contract-review-custom-clauses {
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .contract-review-section:hover .contract-review-custom-clauses {
+          transform: translateX(4px);
+          box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+          border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        
+        /* Button Animations */
+        .contract-review-actions {
+          transition: all 0.3s ease;
+        }
+        .contract-review-back-button {
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .contract-review-back-button:hover {
+          transform: translateY(-2px) scale(1.02);
+          box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+        }
+        .contract-review-export-button {
+          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+          position: relative;
+          overflow: hidden;
+        }
+        .contract-review-export-button::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.2), transparent);
+          transition: left 0.5s ease;
+        }
+        .contract-review-export-button:hover::before {
+          left: 100%;
+        }
+        .contract-review-export-button:hover {
+          transform: translateY(-3px) scale(1.05);
+          box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3), 0 0 16px rgba(139, 92, 246, 0.2);
+          border-color: #a78bfa;
+        }
+        .contract-review-pay-button {
+          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+          position: relative;
+          overflow: hidden;
+        }
+        .contract-review-pay-button::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+          transition: left 0.5s ease;
+        }
+        .contract-review-pay-button:hover::before {
+          left: 100%;
+        }
+        .contract-review-pay-button:hover {
+          transform: translateY(-3px) scale(1.05) rotate(1deg);
+          box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4), 0 0 16px rgba(139, 92, 246, 0.3);
+        }
+        .contract-review-pay-button:active {
+          transform: translateY(-1px) scale(1.02);
+        }
+      `}</style>
     </motion.div>;
 };

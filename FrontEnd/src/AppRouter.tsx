@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { App } from './App';
 import { AdminDashboard } from './pages/AdminDashboard';
@@ -21,20 +21,126 @@ import { EventCurrentBookingsPage } from './pages/EventCurrentBookingsPage';
 import { CreateContractPage } from './pages/CreateContractPage';
 import { ContractReviewPage } from './pages/ContractReviewPage';
 import { CreateEventPage } from './pages/CreateEventPage';
+import { NotificationsPage } from './pages/NotificationsPage';
+import { AdminEventsPage } from './pages/AdminEventsPage';
+import { AdminUsersPage } from './pages/AdminUsersPage';
+import { AdminVendorsPage } from './pages/AdminVendorsPage';
+import { AdminReportsPage } from './pages/AdminReportsPage';
+import { AdminSettingsPage } from './pages/AdminSettingsPage';
+import { AdminMessagesPage } from './pages/AdminMessagesPage';
+import { AdminMessagesView } from './pages/AdminMessagesView';
+import { AdminEventDetailsPage } from './pages/AdminEventDetailsPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { BackgroundAnimation } from './components/BackgroundAnimation';
+import { Loading } from './components/Loading';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsOfServicePage from './pages/TermsOfServicePage';
+import CookiePolicyPage from './pages/CookiePolicyPage';
 
-export function AppRouter() {
-  return <BrowserRouter>
+function AppRoutes() {
+  const location = useLocation();
+  const isLandingPage = location.pathname === '/';
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingKey, setLoadingKey] = useState(0);
+
+  useEffect(() => {
+    // Show loading on route change
+    setIsLoading(true);
+    setLoadingKey(prev => prev + 1);
+    
+    // Hide loading after a short delay (simulating page load)
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
+  
+  return (
+    <>
+      <BackgroundAnimation 
+        orbOpacity={isLandingPage ? 60 : 30} 
+        gridOpacity={isLandingPage ? 40 : 20} 
+      />
       <AnimatePresence mode="wait">
-        <Routes>
+        {isLoading && <Loading key={loadingKey} />}
+        {!isLoading && (
+          <Routes location={location} key={location.pathname}>
           <Route path="/" element={<LandingPage />} />
           <Route path="/register" element={<Registration />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/terms" element={<TermsOfServicePage />} />
+          <Route path="/cookies" element={<CookiePolicyPage />} />
           <Route 
             path="/admin" 
             element={
               <ProtectedRoute requiredRole="ADMIN">
                 <AdminDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/messages" 
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <AdminMessagesPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/messages/view" 
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <AdminMessagesView />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/events" 
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <AdminEventsPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/events/:id" 
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <AdminEventDetailsPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/users" 
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <AdminUsersPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/vendors" 
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <AdminVendorsPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/reports" 
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <AdminReportsPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/settings" 
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <AdminSettingsPage />
               </ProtectedRoute>
             } 
           />
@@ -144,7 +250,25 @@ export function AppRouter() {
               </ProtectedRoute>
             } 
           />
-        </Routes>
+          <Route 
+            path="/notifications" 
+            element={
+              <ProtectedRoute>
+                <NotificationsPage />
+              </ProtectedRoute>
+            } 
+          />
+          </Routes>
+        )}
       </AnimatePresence>
-    </BrowserRouter>;
+    </>
+  );
+}
+
+export function AppRouter() {
+  return (
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
+  );
 }

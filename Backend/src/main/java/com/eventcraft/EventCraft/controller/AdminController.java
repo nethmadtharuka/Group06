@@ -53,5 +53,22 @@ public class AdminController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
-}
 
+    @GetMapping("/support/chats")
+    public ResponseEntity<List<com.eventcraft.EventCraft.entity.Chat>> getSupportChats() {
+        List<com.eventcraft.EventCraft.entity.Chat> chats = adminService.getSupportChats();
+        return ResponseEntity.ok(chats);
+    }
+
+    @GetMapping("/vendors/best")
+    public ResponseEntity<List<Map<String, Object>>> getBestVendors() {
+        List<Map<String, Object>> bestVendors = adminService.getBestVendors();
+        return ResponseEntity.ok(bestVendors);
+    }
+
+    @GetMapping("/reports/growth")
+    public ResponseEntity<Map<String, Object>> getGrowthReport() {
+        Map<String, Object> report = adminService.getGrowthReport();
+        return ResponseEntity.ok(report);
+    }
+}

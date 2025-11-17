@@ -56,5 +56,40 @@ public class ChatController {
         List<Chat> chats = chatService.getChatsByUser(userId);
         return ResponseEntity.ok(chats);
     }
+
+    @GetMapping("/vendor/{vendorId1}/vendor/{vendorId2}")
+    public ResponseEntity<Chat> getChatByVendors(
+            @PathVariable String vendorId1,
+            @PathVariable String vendorId2) {
+        ChatDTO chatDTO = new ChatDTO();
+        chatDTO.setVendorId(vendorId1);
+        chatDTO.setVendor2Id(vendorId2);
+        try {
+            Chat chat = chatService.createOrGetChat(chatDTO);
+            return ResponseEntity.ok(chat);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/support/user/{userId}")
+    public ResponseEntity<Chat> getEventCraftSupportChatForUser(@PathVariable String userId) {
+        try {
+            Chat chat = chatService.getOrCreateEventCraftSupportChat(userId);
+            return ResponseEntity.ok(chat);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @GetMapping("/support/vendor/{vendorId}")
+    public ResponseEntity<Chat> getEventCraftSupportChatForVendor(@PathVariable String vendorId) {
+        try {
+            Chat chat = chatService.getOrCreateEventCraftSupportChatForVendor(vendorId);
+            return ResponseEntity.ok(chat);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 }
 

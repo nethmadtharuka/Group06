@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://localhost:8080/api';
+// Use environment variable or fallback to production URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://eventcraft-backend-production-b9b7.up.railway.app/api';
 
 // Helper function to handle API calls
 async function apiCall<T>(
@@ -43,9 +44,23 @@ async function apiCall<T>(
       return {} as T;
     }
     
-    return JSON.parse(text) as T;
+    // Try to parse as JSON, but handle plain text responses
+    try {
+      return JSON.parse(text) as T;
+    } catch (parseError) {
+      // If it's not JSON, check if it's a simple string response
+      // Some endpoints return plain text (e.g., "Messages marked as seen")
+      if (text.trim().length > 0) {
+        // Return the text as a simple object for non-JSON responses
+        return { message: text } as T;
+      }
+      return {} as T;
+    }
   } catch (error: any) {
-    console.error(`API call failed for ${endpoint}:`, error);
+    // Only log errors in development
+    if (import.meta.env.DEV) {
+      console.error(`API call failed for ${endpoint}:`, error);
+    }
     // Re-throw with a more user-friendly message if it's a network error
     if (error.message && error.message.includes('Failed to fetch')) {
       throw new Error('Unable to connect to server. Please check your connection.');
@@ -84,8 +99,27 @@ export const userAPI = {
     return apiCall(`/users/${id}`);
   },
 
+  updateUser: async (userId: string, userData: {
+    fullName?: string;
+    username?: string;
+    email?: string;
+    phone?: string;
+    password?: string;
+  }) => {
+    return apiCall(`/users/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify(userData),
+    });
+  },
+
   getAllUsers: async () => {
     return apiCall('/users');
+  },
+
+  deleteUser: async (userId: string) => {
+    return apiCall(`/users/${userId}`, {
+      method: 'DELETE',
+    });
   },
 };
 
@@ -216,12 +250,17 @@ export const reviewAPI = {
 export const chatAPI = {
   createOrGetChat: async (chatData: {
     vendorId: string;
-    userId: string;
+    userId?: string;
+    vendor2Id?: string;
   }) => {
     return apiCall('/chats', {
       method: 'POST',
       body: JSON.stringify(chatData),
     });
+  },
+
+  createOrGetVendorToVendorChat: async (vendorId1: string, vendorId2: string) => {
+    return apiCall(`/chats/vendor/${vendorId1}/vendor/${vendorId2}`);
   },
 
   getChatById: async (chatId: string) => {
@@ -274,6 +313,10 @@ export const messageAPI = {
 
   getUnreadMessageCount: async (chatId: string, userId: string) => {
     return apiCall(`/messages/chat/${chatId}/unread-count/user/${userId}`);
+  },
+
+  getUnreadMessages: async (chatId: string, userId: string) => {
+    return apiCall(`/messages/chat/${chatId}/unread/user/${userId}`);
   },
 };
 
@@ -329,6 +372,19 @@ export const vendorPackageAPI = {
   getActivePackagesByVendor: async (vendorId: string) => {
     return apiCall(`/vendor-packages/vendor/${vendorId}/active`);
   },
+
+  updatePackage: async (packageId: string, vendorId: string, packageData: any) => {
+    return apiCall(`/vendor-packages/${packageId}/vendor/${vendorId}`, {
+      method: 'PUT',
+      body: JSON.stringify(packageData),
+    });
+  },
+
+  deletePackage: async (packageId: string, vendorId: string) => {
+    return apiCall(`/vendor-packages/${packageId}/vendor/${vendorId}`, {
+      method: 'DELETE',
+    });
+  },
 };
 
 // Admin API
@@ -351,6 +407,18 @@ export const adminAPI = {
     return apiCall(`/admin/vendors/${vendorId}/reject`, {
       method: 'PUT',
     });
+  },
+
+  getSupportChats: async () => {
+    return apiCall('/admin/support/chats');
+  },
+
+  getBestVendors: async () => {
+    return apiCall('/admin/vendors/best');
+  },
+
+  getGrowthReport: async () => {
+    return apiCall('/admin/reports/growth');
   },
 };
 
@@ -376,6 +444,35 @@ export const paymentAPI = {
 
   getPaymentById: async (paymentId: string) => {
     return apiCall(`/payments/${paymentId}`);
+  },
+};
+
+// Notification API
+export const notificationAPI = {
+  getNotifications: async (userId: string) => {
+    return apiCall(`/notifications/user/${userId}`);
+  },
+
+  getUnreadCount: async (userId: string) => {
+    return apiCall(`/notifications/user/${userId}/unread-count`);
+  },
+
+  markAsRead: async (notificationId: string) => {
+    return apiCall(`/notifications/${notificationId}/read`, {
+      method: 'PUT',
+    });
+  },
+
+  markAllAsRead: async (userId: string) => {
+    return apiCall(`/notifications/user/${userId}/read-all`, {
+      method: 'PUT',
+    });
+  },
+
+  deleteNotification: async (notificationId: string) => {
+    return apiCall(`/notifications/${notificationId}`, {
+      method: 'DELETE',
+    });
   },
 };
 

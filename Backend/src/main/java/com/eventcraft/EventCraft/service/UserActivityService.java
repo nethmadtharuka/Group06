@@ -78,7 +78,7 @@ public class UserActivityService {
                         payment.getPaymentDate() != null) {
                         activities.add(new ActivityItem(
                             "PAYMENT_COMPLETED",
-                            "Completed payment of $" + (payment.getAmount() != null ? String.format("%.2f", payment.getAmount()) : "0.00"),
+                            "Completed payment of Rs. " + (payment.getAmount() != null ? String.format("%.2f", payment.getAmount()) : "0.00"),
                             payment.getPaymentDate(),
                             payment.getId(),
                             "payment"

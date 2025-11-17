@@ -35,11 +35,53 @@ public class MessageService {
         }
 
         // Validate sender ID matches chat participants
-        if (senderType == Message.SenderType.VENDOR && !chat.getVendor().getId().equals(messageDTO.getSenderId())) {
-            throw new RuntimeException("Sender ID does not match the vendor in this chat");
-        }
-        if (senderType == Message.SenderType.USER && !chat.getUser().getId().equals(messageDTO.getSenderId())) {
-            throw new RuntimeException("Sender ID does not match the user in this chat");
+        boolean isVendorToVendor = chat.getVendor2() != null;
+        boolean isSystemChat = chat.getIsSystemChat() != null && chat.getIsSystemChat();
+        
+        // For system chats, allow more flexible validation
+        if (!isSystemChat) {
+            if (senderType == Message.SenderType.VENDOR) {
+                // For vendor-to-vendor chats, sender can be either vendor
+                if (isVendorToVendor) {
+                    boolean isVendor1 = chat.getVendor() != null && chat.getVendor().getId().equals(messageDTO.getSenderId());
+                    boolean isVendor2 = chat.getVendor2() != null && chat.getVendor2().getId().equals(messageDTO.getSenderId());
+                    if (!isVendor1 && !isVendor2) {
+                        throw new RuntimeException("Sender ID does not match either vendor in this chat");
+                    }
+                } else {
+                    // Vendor-to-user chat
+                    if (chat.getVendor() == null || !chat.getVendor().getId().equals(messageDTO.getSenderId())) {
+                        throw new RuntimeException("Sender ID does not match the vendor in this chat");
+                    }
+                }
+            } else if (senderType == Message.SenderType.USER) {
+                // User can only send in vendor-to-user chats
+                if (isVendorToVendor) {
+                    throw new RuntimeException("Users cannot send messages in vendor-to-vendor chats");
+                }
+                if (chat.getUser() == null || !chat.getUser().getId().equals(messageDTO.getSenderId())) {
+                    throw new RuntimeException("Sender ID does not match the user in this chat");
+                }
+            }
+        } else {
+            // System chat validation - allow admin to respond
+            // For system chats, we allow the admin vendor or the user/vendor who initiated the chat
+            if (senderType == Message.SenderType.VENDOR) {
+                boolean isValidVendor = false;
+                if (chat.getVendor() != null && chat.getVendor().getId().equals(messageDTO.getSenderId())) {
+                    isValidVendor = true;
+                }
+                if (chat.getVendor2() != null && chat.getVendor2().getId().equals(messageDTO.getSenderId())) {
+                    isValidVendor = true;
+                }
+                if (!isValidVendor) {
+                    throw new RuntimeException("Sender ID does not match any vendor in this system chat");
+                }
+            } else if (senderType == Message.SenderType.USER) {
+                if (chat.getUser() == null || !chat.getUser().getId().equals(messageDTO.getSenderId())) {
+                    throw new RuntimeException("Sender ID does not match the user in this system chat");
+                }
+            }
         }
 
         // Create message
@@ -60,7 +102,38 @@ public class MessageService {
                 : messageDTO.getContent();
         chatService.updateChatLastMessage(messageDTO.getChatId(), lastMessagePreview);
 
+        // Send automated reply if message is sent TO a vendor (not FROM a vendor)
+        // Only for vendor-to-user chats, and only if user sent the message
+        if (!isVendorToVendor && senderType == Message.SenderType.USER && chat.getVendor() != null) {
+            sendAutomatedReply(chat, messageDTO.getSenderId());
+        }
+
         return savedMessage;
+    }
+
+    private void sendAutomatedReply(Chat chat, String userSenderId) {
+        try {
+            // Create automated reply message
+            String automatedMessage = "Thank you for your message. We will contact you soon.";
+            String vendorId = chat.getVendor().getId();
+            
+            Message automatedReply = Message.builder()
+                    .chat(chat)
+                    .senderId(vendorId)
+                    .senderType(Message.SenderType.VENDOR)
+                    .content(automatedMessage)
+                    .status(Message.MessageStatus.SENT)
+                    .createdAt(LocalDateTime.now())
+                    .build();
+            
+            messageRepository.save(automatedReply);
+            
+            // Update chat's last message
+            chatService.updateChatLastMessage(chat.getId(), automatedMessage);
+        } catch (Exception e) {
+            // Log error but don't fail the original message send
+            System.err.println("Failed to send automated reply: " + e.getMessage());
+        }
     }
 
     public List<Message> getMessagesByChat(String chatId) {
@@ -77,10 +150,11 @@ public class MessageService {
                 .orElseThrow(() -> new RuntimeException("Chat not found with id: " + chatId));
 
         // Determine if userId is vendor or user
-        boolean isVendor = chat.getVendor().getId().equals(userId);
-        boolean isUser = chat.getUser().getId().equals(userId);
+        boolean isVendor1 = chat.getVendor() != null && chat.getVendor().getId().equals(userId);
+        boolean isVendor2 = chat.getVendor2() != null && chat.getVendor2().getId().equals(userId);
+        boolean isUser = chat.getUser() != null && chat.getUser().getId().equals(userId);
 
-        if (!isVendor && !isUser) {
+        if (!isVendor1 && !isVendor2 && !isUser) {
             throw new RuntimeException("User is not a participant in this chat");
         }
 

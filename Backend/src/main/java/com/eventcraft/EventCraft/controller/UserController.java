@@ -28,8 +28,15 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public Optional<User> getUserById(@PathVariable String id) {
-        return userService.getUserById(id);
+    public ResponseEntity<?> getUserById(@PathVariable String id) {
+        Optional<User> userOpt = userService.getUserById(id);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            user.setPassword(null); // Remove password from response
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/register")
@@ -54,11 +61,8 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
         String loginId = loginRequest.getLoginIdentifier();
-        System.out.println("DEBUG: Login attempt for: " + loginId);
-        System.out.println("DEBUG: Password: " + (loginRequest.getPassword() != null ? "provided" : "null"));
 
         if (loginId == null || loginId.isEmpty() || loginRequest.getPassword() == null || loginRequest.getPassword().isEmpty()) {
-            System.out.println("DEBUG: Missing login credentials");
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Missing username/email or password");
             errorResponse.put("message", "Please provide both username/email and password");
@@ -75,32 +79,12 @@ public class UserController {
             // Return user data if valid (excluding password)
             User user = authenticatedUser.get();
             user.setPassword(null); // Remove password from response for security
-            System.out.println("DEBUG: Login successful for user: " + user.getUsername());
             return ResponseEntity.ok(user);
         } else {
-            System.out.println("DEBUG: Login failed for user: " + loginId);
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Invalid credentials");
             errorResponse.put("message", "Invalid username/email or password. Please try again.");
             return ResponseEntity.status(401).body(errorResponse);
-        }
-    }
-
-    // Test endpoint to create a test user
-    @PostMapping("/test-user")
-    public ResponseEntity<?> createTestUser() {
-        User testUser = new User();
-        testUser.setUsername("testuser");
-        testUser.setEmail("test@test.com");
-        testUser.setPassword("password123");
-        testUser.setFullName("Test User");
-
-        try {
-            User createdUser = userService.createUser(testUser);
-            createdUser.setPassword(null); // Remove password from response
-            return ResponseEntity.ok("Test user created: " + createdUser);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error creating test user: " + e.getMessage());
         }
     }
 
@@ -123,6 +107,25 @@ public class UserController {
             return ResponseEntity.ok(activities);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(List.of());
+        }
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<?> updateUser(@PathVariable String userId, @RequestBody User user) {
+        try {
+            User updatedUser = userService.updateUser(userId, user);
+            updatedUser.setPassword(null); // Remove password from response
+            return ResponseEntity.ok(updatedUser);
+        } catch (RuntimeException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Error updating user");
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.status(500).body(errorResponse);
         }
     }
 }

@@ -32,43 +32,27 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        System.out.println("DEBUG: Creating user: " + user.getUsername() + " with email: " + user.getEmail());
-        System.out.println("DEBUG: Original password length: " + user.getPassword().length());
-
         // Hash the password before saving
         String hashedPassword = passwordEncoder.encode(user.getPassword());
-        System.out.println("DEBUG: Hashed password length: " + hashedPassword.length());
-
         user.setPassword(hashedPassword);
-        User savedUser = userRepository.save(user);
-
-        System.out.println("DEBUG: User saved with ID: " + savedUser.getId());
-        return savedUser;
+        return userRepository.save(user);
     }
 
     public Optional<User> authenticateUser(String usernameOrEmail, String rawPassword) {
-        System.out.println("DEBUG: Attempting to authenticate user: " + usernameOrEmail);
-
         // Find user by username or email
         Optional<User> userOpt = userRepository.findByUsername(usernameOrEmail);
         if (userOpt.isEmpty()) {
-            System.out.println("DEBUG: User not found by username, trying email...");
             userOpt = userRepository.findByEmail(usernameOrEmail);
         }
 
         if (userOpt.isEmpty()) {
-            System.out.println("DEBUG: User not found by username or email");
             return Optional.empty();
         }
 
         User user = userOpt.get();
-        System.out.println("DEBUG: Found user: " + user.getUsername() + " (ID: " + user.getId() + ")");
-        System.out.println("DEBUG: Raw password length: " + rawPassword.length());
-        System.out.println("DEBUG: Stored password hash length: " + user.getPassword().length());
 
         // Verify password if user found
         boolean passwordMatches = passwordEncoder.matches(rawPassword, user.getPassword());
-        System.out.println("DEBUG: Password matches: " + passwordMatches);
 
         if (passwordMatches) {
             return userOpt;
@@ -79,5 +63,42 @@ public class UserService {
 
     public void deleteUser(String id) {
         userRepository.deleteById(id);
+    }
+
+    public User updateUser(String userId, User updatedUser) {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        // Update fields if provided
+        if (updatedUser.getFullName() != null && !updatedUser.getFullName().isEmpty()) {
+            existingUser.setFullName(updatedUser.getFullName());
+        }
+        if (updatedUser.getPhone() != null) {
+            existingUser.setPhone(updatedUser.getPhone());
+        }
+        if (updatedUser.getEmail() != null && !updatedUser.getEmail().isEmpty()) {
+            // Check if email is already taken by another user
+            Optional<User> userWithEmail = userRepository.findByEmail(updatedUser.getEmail());
+            if (userWithEmail.isPresent() && !userWithEmail.get().getId().equals(userId)) {
+                throw new RuntimeException("Email already exists");
+            }
+            existingUser.setEmail(updatedUser.getEmail());
+        }
+        if (updatedUser.getUsername() != null && !updatedUser.getUsername().isEmpty()) {
+            // Check if username is already taken by another user
+            Optional<User> userWithUsername = userRepository.findByUsername(updatedUser.getUsername());
+            if (userWithUsername.isPresent() && !userWithUsername.get().getId().equals(userId)) {
+                throw new RuntimeException("Username already exists");
+            }
+            existingUser.setUsername(updatedUser.getUsername());
+        }
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+            // Hash new password
+            String hashedPassword = passwordEncoder.encode(updatedUser.getPassword());
+            existingUser.setPassword(hashedPassword);
+        }
+
+        existingUser.setUpdatedAt(java.time.LocalDateTime.now());
+        return userRepository.save(existingUser);
     }
 }
