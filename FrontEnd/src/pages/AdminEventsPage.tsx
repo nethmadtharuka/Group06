@@ -3,14 +3,11 @@ import { Sidebar } from '../components/Sidebar';
 import { SearchIcon, PlusIcon, EditIcon, TrashIcon, CalendarIcon } from 'lucide-react';
 import { eventAPI } from '../services/api';
 import { useNavigate } from 'react-router-dom';
-import { ConfirmDialog } from '../components/ConfirmDialog';
 
 export const AdminEventsPage = () => {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [eventToDelete, setEventToDelete] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState<any>(null);
   const [formData, setFormData] = useState({
@@ -68,30 +65,18 @@ export const AdminEventsPage = () => {
     }
   };
 
-  const handleDeleteClick = (eventId: string) => {
-    setEventToDelete(eventId);
-    setShowDeleteDialog(true);
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!eventToDelete) return;
-    
+  const handleDeleteEvent = async (eventId: string) => {
+    if (!confirm('Are you sure you want to delete this event?')) {
+      return;
+    }
     try {
-      await eventAPI.deleteEvent(eventToDelete);
+      await eventAPI.deleteEvent(eventId);
       loadEvents();
       alert('Event deleted successfully!');
     } catch (error: any) {
       console.error('Error deleting event:', error);
       alert(error.message || 'Failed to delete event. Please try again.');
-    } finally {
-      setShowDeleteDialog(false);
-      setEventToDelete(null);
     }
-  };
-
-  const handleDeleteCancel = () => {
-    setShowDeleteDialog(false);
-    setEventToDelete(null);
   };
 
   const formatDate = (dateStr: string | undefined) => {
@@ -199,7 +184,7 @@ export const AdminEventsPage = () => {
                               <CalendarIcon size={18} />
                             </button>
                             <button
-                              onClick={() => handleDeleteClick(event.id)}
+                              onClick={() => handleDeleteEvent(event.id)}
                               className="text-red-400 hover:text-red-300 transition-colors"
                               title="Delete Event"
                             >
@@ -305,17 +290,6 @@ export const AdminEventsPage = () => {
           </div>
         </div>
       )}
-
-      <ConfirmDialog
-        isOpen={showDeleteDialog}
-        title="Delete Event"
-        message="Are you sure you want to delete this event? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
-        onConfirm={handleDeleteConfirm}
-        onCancel={handleDeleteCancel}
-        variant="danger"
-      />
     </div>
   );
 };
