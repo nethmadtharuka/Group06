@@ -6,6 +6,7 @@ import { logout } from '../utils/auth';
 import { userAPI, vendorAPI, vendorPackageAPI } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { EditIcon, TrashIcon, PlusIcon } from 'lucide-react';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 
 export const UserProfile = () => {
   const navigate = useNavigate();
@@ -66,6 +67,8 @@ export const UserProfile = () => {
   const [packageSubmitting, setPackageSubmitting] = useState(false);
   const [packageError, setPackageError] = useState('');
   const [packageSuccess, setPackageSuccess] = useState('');
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [packageToDelete, setPackageToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -400,24 +403,39 @@ export const UserProfile = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleDeletePackage = async (packageId: string) => {
-    if (!confirm('Are you sure you want to delete this package?')) {
+  const handleDeleteClick = (packageId: string) => {
+    setPackageToDelete(packageId);
+    setShowDeleteDialog(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!packageToDelete || !vendor?.id) {
+      setShowDeleteDialog(false);
+      setPackageToDelete(null);
       return;
     }
 
     try {
-      if (!vendor?.id) {
-        setPackageError('Vendor information not found');
-        return;
-      }
-
-      await vendorPackageAPI.deletePackage(packageId, vendor.id);
+      await vendorPackageAPI.deletePackage(packageToDelete, vendor.id);
       setPackageSuccess('Package deleted successfully!');
       await loadPackages(vendor.id);
       setTimeout(() => setPackageSuccess(''), 3000);
     } catch (err: any) {
       setPackageError(err.message || 'Failed to delete package. Please try again.');
+    } finally {
+      setShowDeleteDialog(false);
+      setPackageToDelete(null);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteDialog(false);
+    setPackageToDelete(null);
+  };
+
+  const handleDeletePackage = async (packageId: string) => {
+    // This function is kept for backward compatibility but now uses the dialog
+    handleDeleteClick(packageId);
   };
 
   const cancelPackageEdit = () => {
@@ -1575,5 +1593,16 @@ export const UserProfile = () => {
           }
         }
       `}</style>
+
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        title="Delete Package"
+        message="Are you sure you want to delete this package? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+        variant="danger"
+      />
     </div>;
 };

@@ -84,3 +84,133 @@
 .animation-delay-6000 {
   animation-delay: 6s;
 }
+
+/* Confirmation Dialog Animation */
+@keyframes slide-in {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+
+/* Light Mode Styles */
+.light {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f3f4f6;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --border-color: #e5e7eb;
+}
+
+.dark {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #1a1a2e;
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
+  --border-color: #374151;
+}
+
+/* Theme-aware background colors */
+.light body,
+.light #root {
+  background-color: #f9fafb !important;
+  color: #111827 !important;
+}
+
+.light .bg-\[#0a0a0f\],
+.light .bg-\[#0a0a0f\]\/60,
+.light .bg-\[#0a0a0f\]\/80 {
+  background-color: #ffffff !important;
+}
+
+.light .bg-gray-800,
+.light .bg-gray-800\/50 {
+  background-color: #f3f4f6 !important;
+}
+
+.light .bg-gray-900 {
+  background-color: #e5e7eb !important;
+}
+
+.light .bg-transparent {
+  background-color: #f9fafb !important;
+}
+
+/* Theme-aware text colors */
+.light .text-white {
+  color: #111827 !important;
+}
+
+.light .text-gray-300,
+.light .text-gray-400 {
+  color: #6b7280 !important;
+}
+
+/* Theme-aware borders */
+.light .border-gray-700,
+.light .border-gray-800 {
+  border-color: #e5e7eb !important;
+}
+
+/* Theme-aware inputs */
+.light input,
+.light textarea,
+.light select {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border-color: #d1d5db !important;
+}
+
+.light input::placeholder,
+.light textarea::placeholder {
+  color: #9ca3af !important;
+}
+
+/* Theme-aware buttons */
+.light .bg-gray-700 {
+  background-color: #e5e7eb !important;
+  color: #111827 !important;
+}
+
+.light .bg-gray-700:hover {
+  background-color: #d1d5db !important;
+}
+
+/* Theme-aware cards and containers */
+.light .bg-gray-800\/50 {
+  background-color: rgba(243, 244, 246, 0.5) !important;
+}
+
+/* Theme-aware header */
+.light header {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-color: #e5e7eb !important;
+}
+
+/* Theme-aware sidebar */
+.light aside {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-color: #e5e7eb !important;
+}
+
+/* Theme-aware purple buttons (keep purple in both themes) */
+.light .bg-purple-600 {
+  background-color: #9333ea !important;
+}
+
+.light .bg-purple-600:hover {
+  background-color: #7e22ce !important;
+}
+
+/* Theme-aware backdrop blur backgrounds */
+.light .backdrop-blur-sm {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}

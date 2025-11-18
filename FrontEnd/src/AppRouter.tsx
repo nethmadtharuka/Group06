@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
+import { useTheme } from './hooks/useTheme';
 import { App } from './App';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { UserDashboard } from './pages/UserDashboard';
@@ -42,6 +43,9 @@ function AppRoutes() {
   const isLandingPage = location.pathname === '/';
   const [isLoading, setIsLoading] = useState(false);
   const [loadingKey, setLoadingKey] = useState(0);
+  
+  // Initialize theme
+  useTheme();
 
   useEffect(() => {
     // Show loading on route change
