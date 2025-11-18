@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { BellIcon, UserCircleIcon, MessageCircleIcon } from 'lucide-react';
 import { notificationAPI } from '../services/api';
+import { ThemeToggle } from './ThemeToggle';
 
 export const Header = () => {
   const location = useLocation();
@@ -72,6 +73,7 @@ export const Header = () => {
           </Link>
         </nav>
         <div className="flex items-center space-x-4 header-actions">
+          <ThemeToggle />
           <Link 
             to="/messages" 
             className="p-2 rounded-full md:hidden header-mobile-chat-button"

@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Sidebar } from '../components/Sidebar';
 import { SearchIcon, TrashIcon, UserIcon, MailIcon, PhoneIcon } from 'lucide-react';
 import { userAPI } from '../services/api';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 
 export const AdminUsersPage = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     loadUsers();
@@ -28,18 +31,30 @@ export const AdminUsersPage = () => {
     }
   };
 
-  const handleDeleteUser = async (userId: string) => {
-    if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
-      return;
-    }
+  const handleDeleteClick = (userId: string) => {
+    setUserToDelete(userId);
+    setShowDeleteDialog(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!userToDelete) return;
+    
     try {
-      await userAPI.deleteUser(userId);
+      await userAPI.deleteUser(userToDelete);
       loadUsers();
       alert('User deleted successfully!');
     } catch (error: any) {
       console.error('Error deleting user:', error);
       alert(error.message || 'Failed to delete user. Please try again.');
+    } finally {
+      setShowDeleteDialog(false);
+      setUserToDelete(null);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteDialog(false);
+    setUserToDelete(null);
   };
 
   const formatDate = (dateStr: string | undefined) => {
@@ -150,7 +165,7 @@ export const AdminUsersPage = () => {
                         <td className="py-4 px-4 text-gray-300">{formatDate(user.createdAt)}</td>
                         <td className="py-4 px-4 text-right">
                           <button
-                            onClick={() => handleDeleteUser(user.id)}
+                            onClick={() => handleDeleteClick(user.id)}
                             className="text-red-400 hover:text-red-300 transition-colors"
                             title="Delete User"
                             disabled={user.role === 'ADMIN'}
@@ -167,6 +182,17 @@ export const AdminUsersPage = () => {
           )}
         </main>
       </div>
+
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        title="Delete User"
+        message="Are you sure you want to delete this user? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+        variant="danger"
+      />
     </div>
   );
 };
