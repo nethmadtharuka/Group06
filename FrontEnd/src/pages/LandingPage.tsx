@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { MenuIcon, XIcon } from 'lucide-react';
 import Footer from '../components/Footer';
 
 export const LandingPage = () => {
@@ -9,6 +10,7 @@ export const LandingPage = () => {
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
   const [isReady, setIsReady] = useState(false); // To prevent flashing at (0,0)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Function to handle vendor navigation (check login status)
   const handleVendorNavigation = (e: React.MouseEvent) => {
@@ -140,69 +142,131 @@ export const LandingPage = () => {
       {/* Hero Section with Video Background */}
       <section id="home" className="relative h-screen flex items-end justify-center overflow-hidden">
         {/* Header - Overlay on video */}
-        <header className="absolute -top-4 left-0 right-0 px-8 py-6 flex items-center z-20 header-interactive">
-          <div className="flex items-center w-1/4">
+        <header className="absolute top-0 left-0 right-0 px-4 sm:px-6 md:px-8 py-4 md:py-6 flex items-center justify-between z-20 header-interactive">
+          <div className="flex items-center flex-shrink-0">
             <button 
               onClick={() => scrollToSection('home')}
               className="cursor-pointer header-logo-btn"
               data-cursor-hover
             >
-              <img src="/LOGO.png" alt="EventCraft Logo" className="h-12 w-auto header-logo" />
+              <img src="/LOGO.png" alt="EventCraft Logo" className="h-8 sm:h-10 md:h-12 w-auto header-logo" />
             </button>
           </div>
-          <nav className="hidden md:flex space-x-8 w-1/2 justify-center items-center">
+          <nav className="hidden lg:flex space-x-4 xl:space-x-8 flex-1 justify-center items-center">
             <button 
               onClick={() => scrollToSection('problem')}
-              className="text-white header-nav-item"
+              className="text-white text-sm xl:text-base header-nav-item"
               data-cursor-hover
             >
               Problem
             </button>
             <button 
               onClick={() => scrollToSection('how')}
-              className="text-white header-nav-item"
+              className="text-white text-sm xl:text-base header-nav-item"
               data-cursor-hover
             >
               How It Works
             </button>
             <button 
               onClick={() => scrollToSection('contracts')}
-              className="text-white header-nav-item"
+              className="text-white text-sm xl:text-base header-nav-item"
               data-cursor-hover
             >
               Contracts
             </button>
             <button 
               onClick={() => scrollToSection('proof')}
-              className="text-white header-nav-item"
+              className="text-white text-sm xl:text-base header-nav-item"
               data-cursor-hover
             >
               Reviews
             </button>
             <button 
               onClick={() => scrollToSection('pricing')}
-              className="text-white header-nav-item"
+              className="text-white text-sm xl:text-base header-nav-item"
               data-cursor-hover
             >
               Pricing
             </button>
             <button 
               onClick={() => scrollToSection('faq')}
-              className="text-white header-nav-item"
+              className="text-white text-sm xl:text-base header-nav-item"
               data-cursor-hover
             >
               FAQ
             </button>
           </nav>
-          <div className="flex items-center space-x-4 w-1/4 justify-end">
-            <Link to="/login" className="text-white header-link-item" data-cursor-hover>
+          <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
+            <Link to="/login" className="text-white text-sm sm:text-base header-link-item hidden sm:inline-block" data-cursor-hover>
               Log In
             </Link>
-            <Link to="/register" className="glass-button-signup text-white py-2 px-6 rounded-lg transition-all transform hover:-translate-y-0.5 hover:shadow-xl" data-cursor-hover>
+            <Link to="/register" className="glass-button-signup text-white py-1.5 px-3 sm:py-2 sm:px-6 rounded-lg text-xs sm:text-sm md:text-base transition-all transform hover:-translate-y-0.5 hover:shadow-xl" data-cursor-hover>
               Sign Up
             </Link>
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden text-white p-2"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <XIcon size={24} /> : <MenuIcon size={24} />}
+            </button>
           </div>
         </header>
+        
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="absolute top-16 left-0 right-0 bg-[#0a0a0f]/95 backdrop-blur-md z-30 lg:hidden border-b border-gray-800">
+            <nav className="flex flex-col px-4 py-4 space-y-3">
+              <button 
+                onClick={() => { scrollToSection('problem'); setMobileMenuOpen(false); }}
+                className="text-white text-left py-2 header-nav-item"
+                data-cursor-hover
+              >
+                Problem
+              </button>
+              <button 
+                onClick={() => { scrollToSection('how'); setMobileMenuOpen(false); }}
+                className="text-white text-left py-2 header-nav-item"
+                data-cursor-hover
+              >
+                How It Works
+              </button>
+              <button 
+                onClick={() => { scrollToSection('contracts'); setMobileMenuOpen(false); }}
+                className="text-white text-left py-2 header-nav-item"
+                data-cursor-hover
+              >
+                Contracts
+              </button>
+              <button 
+                onClick={() => { scrollToSection('proof'); setMobileMenuOpen(false); }}
+                className="text-white text-left py-2 header-nav-item"
+                data-cursor-hover
+              >
+                Reviews
+              </button>
+              <button 
+                onClick={() => { scrollToSection('pricing'); setMobileMenuOpen(false); }}
+                className="text-white text-left py-2 header-nav-item"
+                data-cursor-hover
+              >
+                Pricing
+              </button>
+              <button 
+                onClick={() => { scrollToSection('faq'); setMobileMenuOpen(false); }}
+                className="text-white text-left py-2 header-nav-item"
+                data-cursor-hover
+              >
+                FAQ
+              </button>
+              <div className="pt-2 border-t border-gray-800">
+                <Link to="/login" className="text-white block py-2 header-link-item" onClick={() => setMobileMenuOpen(false)} data-cursor-hover>
+                  Log In
+                </Link>
+              </div>
+            </nav>
+          </div>
+        )}
         <video 
           autoPlay 
           loop 
@@ -236,15 +300,15 @@ export const LandingPage = () => {
         />
 
         {/* Hero Content */}
-        <div className="container mx-auto px-4 z-10 relative pb-24" style={{ paddingTop: '120px' }}>
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 z-10 relative pb-12 sm:pb-16 md:pb-24" style={{ paddingTop: '60px' }}>
           <div className="max-w-4xl mx-auto text-center">
             {/* Animated Logo */}
-            <div className="mb-6 flex justify-center">
+            <div className="mb-4 sm:mb-6 flex justify-center -mt-4 sm:-mt-6">
               <div className="logo-interactive-container">
                 <img 
                   src="/LOGO.png" 
                   alt="EventCraft Logo" 
-                  className="h-56 md:h-80 w-auto logo-interactive" 
+                  className="h-24 sm:h-32 md:h-40 lg:h-56 w-auto logo-interactive" 
                   style={{
                     animation: 'logoFloat 3s ease-in-out infinite, logoFadeIn 2s ease-out'
                   }}
@@ -252,7 +316,7 @@ export const LandingPage = () => {
               </div>
             </div>
             <h1 
-              className="text-5xl md:text-6xl font-extrabold mb-6 text-white interactive-text"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 sm:mb-6 px-2 text-white interactive-text"
               style={{
                 animation: 'dissolveIn 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s both, textGlow 2s ease-in-out 1.8s infinite',
                 fontFamily: '"Poppins", sans-serif'
@@ -263,7 +327,7 @@ export const LandingPage = () => {
               <span className="inline-block word-interactive">events</span>
           </h1>
             <p 
-              className="text-xl md:text-2xl text-white mb-10 interactive-text"
+              className="text-base sm:text-lg md:text-xl lg:text-2xl text-white mb-6 sm:mb-8 md:mb-10 px-4 interactive-text"
               style={{
                 animation: 'dissolveIn 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.8s both',
                 fontFamily: '"Poppins", sans-serif'
@@ -274,21 +338,21 @@ export const LandingPage = () => {
               <span className="inline-block phrase-interactive">sign & pay—one smooth flow.</span>
             </p>
             <div 
-              className="flex flex-col sm:flex-row justify-center gap-4"
+              className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4"
               style={{
                 animation: 'textFadeInUp 1s ease-out 1.1s both'
               }}
             >
               <button 
                 onClick={handleVendorNavigation}
-                className="glass-button-primary px-8 py-4 rounded-full font-medium transition-all transform hover:-translate-y-1 hover:shadow-xl"
+                className="glass-button-primary px-6 sm:px-8 py-3 sm:py-4 rounded-full text-sm sm:text-base font-medium transition-all transform hover:-translate-y-1 hover:shadow-xl"
                 data-cursor-hover
               >
                 Find Vendors
               </button>
               <button 
                 onClick={() => scrollToSection('how')} 
-                className="glass-button-secondary px-8 py-4 rounded-full font-medium transition-all transform hover:-translate-y-1 hover:shadow-xl"
+                className="glass-button-secondary px-6 sm:px-8 py-3 sm:py-4 rounded-full text-sm sm:text-base font-medium transition-all transform hover:-translate-y-1 hover:shadow-xl"
                 data-cursor-hover
               >
                 See How It Works
@@ -364,20 +428,20 @@ export const LandingPage = () => {
       </header>
       
       {/* Problem Solution Section */}
-      <section id="problem" className="py-24 bg-[#0a0a0f]/40 backdrop-blur-sm relative">
+      <section id="problem" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#0a0a0f]/40 backdrop-blur-sm relative">
         {/* Top gradient - matches video bottom gradient */}
         <div
-          className="absolute top-0 left-0 w-full h-40 md:h-56 pointer-events-none"
+          className="absolute top-0 left-0 w-full h-32 sm:h-40 md:h-56 pointer-events-none"
           style={{
             zIndex: 1,
             background: 'linear-gradient(180deg, rgba(10,10,15,0.95) 0%, rgba(10,10,15,0.5) 50%, rgba(0,0,0,0) 100%)'
           }}
           aria-hidden="true"
         />
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center mb-16">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 relative z-10">
+          <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-12 md:mb-16">
             <h2 
-              className="text-3xl md:text-4xl font-bold mb-3 reveal text-white section-title-interactive"
+              className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3 px-4 reveal text-white section-title-interactive"
               style={{ fontFamily: '"Poppins", sans-serif' }}
             >
               <span className="inline-block section-title-word">From</span>{' '}
@@ -386,107 +450,107 @@ export const LandingPage = () => {
               <span className="inline-block section-title-word">Clarity</span>
             </h2>
             <p 
-              className="text-xl text-gray-300 reveal section-subtitle-interactive"
+              className="text-base sm:text-lg md:text-xl text-gray-300 px-4 reveal section-subtitle-interactive"
               style={{ fontFamily: '"Poppins", sans-serif' }}
             >
               <span className="inline-block section-subtitle-phrase">Event planning shouldn't be stressful.</span>{' '}
               <span className="inline-block section-subtitle-phrase">We've simplified the process.</span>
             </p>
           </div>
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div className="space-y-12 reveal">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 md:gap-16 items-start">
+            <div className="space-y-6 sm:space-y-8 md:space-y-12 reveal">
               <div className="flex items-start problem-item-interactive">
-                <div className="flex-shrink-0 bg-red-100/20 backdrop-blur-sm rounded-full p-3 problem-icon-container">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-400 problem-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="flex-shrink-0 bg-red-100/20 backdrop-blur-sm rounded-full p-2 sm:p-3 problem-icon-container">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-red-400 problem-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </div>
-                <div className="ml-4">
-                  <h3 className="text-xl font-semibold mb-2 text-white problem-title">
+                <div className="ml-3 sm:ml-4">
+                  <h3 className="text-lg sm:text-xl font-semibold mb-1 sm:mb-2 text-white problem-title">
                     Endless calls and emails
                   </h3>
-                  <p className="text-gray-300 problem-text">
+                  <p className="text-sm sm:text-base text-gray-300 problem-text">
                     Contacting vendors one by one, repeating your requirements
                     again and again.
                   </p>
                 </div>
               </div>
               <div className="flex items-start problem-item-interactive">
-                <div className="flex-shrink-0 bg-red-100/20 backdrop-blur-sm rounded-full p-3 problem-icon-container">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-400 problem-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="flex-shrink-0 bg-red-100/20 backdrop-blur-sm rounded-full p-2 sm:p-3 problem-icon-container">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-red-400 problem-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </div>
-                <div className="ml-4">
-                  <h3 className="text-xl font-semibold mb-2 text-white problem-title">
+                <div className="ml-3 sm:ml-4">
+                  <h3 className="text-lg sm:text-xl font-semibold mb-1 sm:mb-2 text-white problem-title">
                     Unclear pricing
                   </h3>
-                  <p className="text-gray-300 problem-text">
+                  <p className="text-sm sm:text-base text-gray-300 problem-text">
                     Hidden fees, confusing packages, and quotes that change
                     without explanation.
                   </p>
                 </div>
               </div>
               <div className="flex items-start problem-item-interactive">
-                <div className="flex-shrink-0 bg-red-100/20 backdrop-blur-sm rounded-full p-3 problem-icon-container">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-400 problem-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="flex-shrink-0 bg-red-100/20 backdrop-blur-sm rounded-full p-2 sm:p-3 problem-icon-container">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-red-400 problem-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </div>
-                <div className="ml-4">
-                  <h3 className="text-xl font-semibold mb-2 text-white problem-title">
+                <div className="ml-3 sm:ml-4">
+                  <h3 className="text-lg sm:text-xl font-semibold mb-1 sm:mb-2 text-white problem-title">
                     No central contract system
                   </h3>
-                  <p className="text-gray-300 problem-text">
+                  <p className="text-sm sm:text-base text-gray-300 problem-text">
                     Managing paperwork from multiple vendors in different
                     formats.
                   </p>
                 </div>
               </div>
             </div>
-            <div className="space-y-12 reveal">
+            <div className="space-y-6 sm:space-y-8 md:space-y-12 reveal">
               <div className="flex items-start solution-item-interactive">
-                <div className="flex-shrink-0 bg-green-100/20 backdrop-blur-sm rounded-full p-3 solution-icon-container">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-400 solution-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="flex-shrink-0 bg-green-100/20 backdrop-blur-sm rounded-full p-2 sm:p-3 solution-icon-container">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-green-400 solution-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <div className="ml-4">
-                  <h3 className="text-xl font-semibold mb-2 text-white solution-title">
+                <div className="ml-3 sm:ml-4">
+                  <h3 className="text-lg sm:text-xl font-semibold mb-1 sm:mb-2 text-white solution-title">
                     One simple request form
                   </h3>
-                  <p className="text-gray-300 solution-text">
+                  <p className="text-sm sm:text-base text-gray-300 solution-text">
                     Submit your event details once and receive responses from
                     multiple vendors.
                   </p>
                 </div>
               </div>
               <div className="flex items-start solution-item-interactive">
-                <div className="flex-shrink-0 bg-green-100/20 backdrop-blur-sm rounded-full p-3 solution-icon-container">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-400 solution-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="flex-shrink-0 bg-green-100/20 backdrop-blur-sm rounded-full p-2 sm:p-3 solution-icon-container">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-green-400 solution-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <div className="ml-4">
-                  <h3 className="text-xl font-semibold mb-2 text-white solution-title">
+                <div className="ml-3 sm:ml-4">
+                  <h3 className="text-lg sm:text-xl font-semibold mb-1 sm:mb-2 text-white solution-title">
                     Transparent pricing
                   </h3>
-                  <p className="text-gray-300 solution-text">
+                  <p className="text-sm sm:text-base text-gray-300 solution-text">
                     Clear, itemized quotes that you can compare side-by-side.
                   </p>
                 </div>
               </div>
               <div className="flex items-start solution-item-interactive">
-                <div className="flex-shrink-0 bg-green-100/20 backdrop-blur-sm rounded-full p-3 solution-icon-container">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-400 solution-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="flex-shrink-0 bg-green-100/20 backdrop-blur-sm rounded-full p-2 sm:p-3 solution-icon-container">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-green-400 solution-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <div className="ml-4">
-                  <h3 className="text-xl font-semibold mb-2 text-white solution-title">
+                <div className="ml-3 sm:ml-4">
+                  <h3 className="text-lg sm:text-xl font-semibold mb-1 sm:mb-2 text-white solution-title">
                     Unified workspace
                   </h3>
-                  <p className="text-gray-300 solution-text">
+                  <p className="text-sm sm:text-base text-gray-300 solution-text">
                     Manage quotes, contracts, and payments in one secure
                     platform.
                   </p>
@@ -498,11 +562,11 @@ export const LandingPage = () => {
       </section>
       
       {/* How It Works Section */}
-      <section id="how" className="py-24 bg-[#0a0a0f]/40 backdrop-blur-sm">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center mb-16">
+      <section id="how" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#0a0a0f]/40 backdrop-blur-sm">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8">
+          <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-12 md:mb-16">
             <h2 
-              className="text-3xl md:text-4xl font-bold mb-3 reveal text-white how-works-title-interactive"
+              className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3 px-4 reveal text-white how-works-title-interactive"
               style={{ fontFamily: '"Poppins", sans-serif' }}
             >
               <span className="inline-block how-works-title-word">How</span>{' '}
@@ -510,64 +574,64 @@ export const LandingPage = () => {
               <span className="inline-block how-works-title-word">Works</span>
             </h2>
             <p 
-              className="text-xl text-gray-300 reveal how-works-subtitle-interactive"
+              className="text-base sm:text-lg md:text-xl text-gray-300 px-4 reveal how-works-subtitle-interactive"
               style={{ fontFamily: '"Poppins", sans-serif' }}
             >
               <span className="inline-block how-works-subtitle-phrase">Four simple steps</span>{' '}
               <span className="inline-block how-works-subtitle-phrase">to your perfect event</span>
             </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div data-cursor-hover className="how-works-card-interactive bg-white/10 backdrop-blur-sm rounded-xl p-8 shadow-md reveal border border-white/10 relative overflow-hidden">
-              <div className="h-12 w-12 bg-indigo-100/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-6 how-works-icon-container">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-indigo-400 how-works-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+            <div data-cursor-hover className="how-works-card-interactive bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 md:p-8 shadow-md reveal border border-white/10 relative overflow-hidden">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 bg-indigo-100/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-4 sm:mb-6 how-works-icon-container">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-400 how-works-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-white how-works-card-title">Tell us your needs</h3>
-              <p className="text-gray-300 how-works-card-text">
+              <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-white how-works-card-title">Tell us your needs</h3>
+              <p className="text-sm sm:text-base text-gray-300 how-works-card-text">
                 Share your event date, location, guest count, and specific
                 requirements.
               </p>
             </div>
 
-            <div data-cursor-hover className="how-works-card-interactive bg-white/10 backdrop-blur-sm rounded-xl p-8 shadow-md reveal border border-white/10 relative overflow-hidden">
-              <div className="h-12 w-12 bg-indigo-100/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-6 how-works-icon-container">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-indigo-400 how-works-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div data-cursor-hover className="how-works-card-interactive bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 md:p-8 shadow-md reveal border border-white/10 relative overflow-hidden">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 bg-indigo-100/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-4 sm:mb-6 how-works-icon-container">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-400 how-works-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-white how-works-card-title">
+              <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-white how-works-card-title">
                 Get comparable quotes
               </h3>
-              <p className="text-gray-300 how-works-card-text">
+              <p className="text-sm sm:text-base text-gray-300 how-works-card-text">
                 Receive detailed proposals from vetted vendors in your area.
               </p>
             </div>
 
-            <div data-cursor-hover className="how-works-card-interactive bg-white/10 backdrop-blur-sm rounded-xl p-8 shadow-md reveal border border-white/10 relative overflow-hidden">
-              <div className="h-12 w-12 bg-indigo-100/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-6 how-works-icon-container">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-indigo-400 how-works-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div data-cursor-hover className="how-works-card-interactive bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 md:p-8 shadow-md reveal border border-white/10 relative overflow-hidden">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 bg-indigo-100/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-4 sm:mb-6 how-works-icon-container">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-400 how-works-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-white how-works-card-title">Negotiate & accept</h3>
-              <p className="text-gray-300 how-works-card-text">
+              <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-white how-works-card-title">Negotiate & accept</h3>
+              <p className="text-sm sm:text-base text-gray-300 how-works-card-text">
                 Message vendors directly, adjust quotes, and accept your
                 preferred offer.
               </p>
             </div>
 
-            <div data-cursor-hover className="how-works-card-interactive bg-white/10 backdrop-blur-sm rounded-xl p-8 shadow-md reveal border border-white/10 relative overflow-hidden">
-              <div className="h-12 w-12 bg-indigo-100/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-6 how-works-icon-container">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-indigo-400 how-works-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div data-cursor-hover className="how-works-card-interactive bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 md:p-8 shadow-md reveal border border-white/10 relative overflow-hidden">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 bg-indigo-100/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-4 sm:mb-6 how-works-icon-container">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-400 how-works-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-white how-works-card-title">
+              <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-white how-works-card-title">
                 E-sign & pay deposit
               </h3>
-              <p className="text-gray-300 how-works-card-text">
+              <p className="text-sm sm:text-base text-gray-300 how-works-card-text">
                 Finalize contracts electronically and make secure payments
                 through our platform.
               </p>
@@ -577,11 +641,11 @@ export const LandingPage = () => {
       </section>
       
       {/* Contracts & Payments Section */}
-      <section id="contracts" className="py-24 bg-[#0a0a0f]/40 backdrop-blur-sm">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center mb-16">
+      <section id="contracts" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#0a0a0f]/40 backdrop-blur-sm">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8">
+          <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-12 md:mb-16">
             <h2 
-              className="text-3xl md:text-4xl font-bold mb-3 reveal text-white contracts-title-interactive"
+              className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3 px-4 reveal text-white contracts-title-interactive"
               style={{ fontFamily: '"Poppins", sans-serif' }}
             >
               <span className="inline-block contracts-title-word">Seamless</span>{' '}
@@ -590,7 +654,7 @@ export const LandingPage = () => {
               <span className="inline-block contracts-title-word">Payments</span>
             </h2>
             <p 
-              className="text-xl text-gray-300 reveal contracts-subtitle-interactive"
+              className="text-base sm:text-lg md:text-xl text-gray-300 px-4 reveal contracts-subtitle-interactive"
               style={{ fontFamily: '"Poppins", sans-serif' }}
             >
               <span className="inline-block contracts-subtitle-phrase">Sign contracts</span>{' '}
@@ -680,11 +744,11 @@ export const LandingPage = () => {
       </section>
 
       {/* Social Proof Section */}
-      <section id="proof" className="py-24 bg-[#0a0a0f]/40 backdrop-blur-sm overflow-hidden">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center mb-16">
+      <section id="proof" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#0a0a0f]/40 backdrop-blur-sm overflow-hidden">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8">
+          <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-12 md:mb-16">
             <h2 
-              className="text-3xl md:text-4xl font-bold mb-3 reveal text-white social-proof-title-interactive"
+              className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3 px-4 reveal text-white social-proof-title-interactive"
               style={{ fontFamily: '"Poppins", sans-serif' }}
             >
               <span className="inline-block social-proof-title-word">Trusted</span>{' '}
@@ -692,7 +756,7 @@ export const LandingPage = () => {
               <span className="inline-block social-proof-title-word">Thousands</span>
             </h2>
             <p 
-              className="text-xl text-gray-300 reveal social-proof-subtitle-interactive"
+              className="text-base sm:text-lg md:text-xl text-gray-300 px-4 reveal social-proof-subtitle-interactive"
               style={{ fontFamily: '"Poppins", sans-serif' }}
             >
               <span className="inline-block social-proof-subtitle-phrase">Join over 1,200+ couples</span>{' '}
@@ -997,11 +1061,11 @@ export const LandingPage = () => {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-24 bg-[#0a0a0f]/40 backdrop-blur-sm">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center mb-16">
+      <section id="pricing" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#0a0a0f]/40 backdrop-blur-sm">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8">
+          <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-12 md:mb-16">
             <h2 
-              className="text-3xl md:text-4xl font-bold mb-3 reveal text-white pricing-title-interactive"
+              className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3 px-4 reveal text-white pricing-title-interactive"
               style={{ fontFamily: '"Poppins", sans-serif' }}
             >
               <span className="inline-block pricing-title-word">Simple,</span>{' '}
@@ -1009,7 +1073,7 @@ export const LandingPage = () => {
               <span className="inline-block pricing-title-word">Pricing</span>
             </h2>
             <p 
-              className="text-xl text-gray-300 reveal pricing-subtitle-interactive"
+              className="text-base sm:text-lg md:text-xl text-gray-300 px-4 reveal pricing-subtitle-interactive"
               style={{ fontFamily: '"Poppins", sans-serif' }}
             >
               <span className="inline-block pricing-subtitle-phrase">No monthly fees</span>{' '}
@@ -1125,11 +1189,11 @@ export const LandingPage = () => {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-24 bg-[#0a0a0f]/40 backdrop-blur-sm">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center mb-16">
+      <section id="faq" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#0a0a0f]/40 backdrop-blur-sm">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8">
+          <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-12 md:mb-16">
             <h2 
-              className="text-3xl md:text-4xl font-bold mb-3 reveal text-white faq-title-interactive"
+              className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3 px-4 reveal text-white faq-title-interactive"
               style={{ fontFamily: '"Poppins", sans-serif' }}
             >
               <span className="inline-block faq-title-word">Frequently</span>{' '}
@@ -1137,7 +1201,7 @@ export const LandingPage = () => {
               <span className="inline-block faq-title-word">Questions</span>
             </h2>
             <p 
-              className="text-xl text-gray-300 reveal faq-subtitle-interactive"
+              className="text-base sm:text-lg md:text-xl text-gray-300 px-4 reveal faq-subtitle-interactive"
               style={{ fontFamily: '"Poppins", sans-serif' }}
             >
               <span className="inline-block faq-subtitle-phrase">Everything you need to know</span>{' '}
@@ -1233,11 +1297,11 @@ export const LandingPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-[#0a0a0f]/40 backdrop-blur-sm text-white">
-        <div className="container mx-auto px-4">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#0a0a0f]/40 backdrop-blur-sm text-white">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8">
           <div className="max-w-4xl mx-auto text-center">
             <h2 
-              className="text-3xl md:text-4xl font-bold mb-3 reveal text-white cta-title-interactive"
+              className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3 px-4 reveal text-white cta-title-interactive"
               style={{ fontFamily: '"Poppins", sans-serif' }}
             >
               <span className="inline-block cta-title-word">Ready</span>{' '}
@@ -1248,7 +1312,7 @@ export const LandingPage = () => {
               <span className="inline-block cta-title-word">event?</span>
             </h2>
             <p 
-              className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto reveal cta-subtitle-interactive"
+              className="text-base sm:text-lg md:text-xl text-gray-300 mb-6 sm:mb-8 md:mb-10 max-w-2xl mx-auto px-4 reveal cta-subtitle-interactive"
               style={{ fontFamily: '"Poppins", sans-serif' }}
             >
               <span className="inline-block cta-subtitle-phrase">Join thousands of event planners</span>{' '}
@@ -1256,13 +1320,13 @@ export const LandingPage = () => {
               <span className="inline-block cta-subtitle-phrase">and created unforgettable experiences</span>{' '}
               <span className="inline-block cta-subtitle-phrase">with EventCraft.</span>
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4 reveal">
-              <Link to="/register" className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/30 text-white rounded-full font-medium cta-button-primary transition-all transform hover:-translate-y-1 hover:shadow-lg" data-cursor-hover>
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4 reveal">
+              <Link to="/register" className="px-6 sm:px-8 py-3 sm:py-4 bg-white/10 backdrop-blur-sm border border-white/30 text-white rounded-full text-sm sm:text-base font-medium cta-button-primary transition-all transform hover:-translate-y-1 hover:shadow-lg" data-cursor-hover>
                 Get Started for Free
               </Link>
               <button 
                 onClick={handleVendorNavigation}
-                className="px-8 py-4 bg-indigo-600/80 backdrop-blur-sm border border-indigo-400/50 text-white rounded-full font-medium cta-button-secondary transition-all transform hover:-translate-y-1 hover:shadow-lg" 
+                className="px-6 sm:px-8 py-3 sm:py-4 bg-indigo-600/80 backdrop-blur-sm border border-indigo-400/50 text-white rounded-full text-sm sm:text-base font-medium cta-button-secondary transition-all transform hover:-translate-y-1 hover:shadow-lg" 
                 data-cursor-hover
               >
                 Browse Vendors
